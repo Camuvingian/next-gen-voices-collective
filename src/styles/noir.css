@@ -92,14 +92,10 @@
   margin-top: -0.04em;
   isolation: isolate;
 }
-/* ── Logo: deep red gradient ──────────────────────────── */
-:root .ng-interlock {
-  --ng-edge: #a30f1d;
-  --ng-secondary: #5a0611;
-  --ng-accent: var(--ng-logo-accent);
-  --ng-shine: #ffd6da;
-}
-:root .ng-curtain-panel svg { --ng-surface: var(--ng-curtain); --ng-edge: #a30f1d; }
+/* ── Logo: brand gradient (follows the neon colour) ───── */
+/* edge, depth and shine inherit the brand tokens, which follow the neon colour */
+:root .ng-interlock { --ng-accent: var(--ng-logo-accent); }
+:root .ng-curtain-panel svg { --ng-surface: var(--ng-curtain); --ng-edge: inherit; }
 
 /* ── Wordmark: deco caps with a shimmer every 8 s ─────── */
 :root .ng-wordmark-top { font-size: 25px; letter-spacing: 0.08em; }
@@ -124,7 +120,7 @@
 /* ── Buttons: subtle gradient, glassy top edge ────────── */
 :root .ng-btn { --btn-track: 0.14em; letter-spacing: var(--btn-track); font-weight: 600; }
 :root .ng-btn--primary {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--hl) 78%, #fff) 0%, var(--hl) 42%, color-mix(in srgb, var(--hl) 72%, #000) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--hl) 93%, #fff) 0%, var(--hl) 50%, color-mix(in srgb, var(--hl) 92%, #000) 100%); /* very mild */
   color: var(--hl-fg);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.25), 0 8px 24px -10px rgba(var(--hl-rgb), 0.7);
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
@@ -132,13 +128,20 @@
 :root .ng-btn--primary::before { display: none; } /* the paper-white wipe left white text on white */
 :root .ng-btn--primary:hover {
   color: var(--hl-fg);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--hl) 62%, #fff) 0%, color-mix(in srgb, var(--hl) 88%, #fff) 42%, var(--hl) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--hl) 86%, #fff) 0%, color-mix(in srgb, var(--hl) 94%, #fff) 50%, color-mix(in srgb, var(--hl) 97%, #000) 100%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -1px 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(var(--hl-rgb), 0.6), 0 0 26px rgba(var(--hl-rgb), 0.6), 0 10px 30px -10px rgba(var(--hl-rgb), 0.9);
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
 }
 :root .ng-btn--outline {
   border-color: rgba(var(--ng-metal-rgb), 0.5);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
+}
+/* hover: brighter glass and a lit silver edge; the label stays paper white */
+:root .ng-btn--outline:hover {
+  color: var(--ng-fg);
+  border-color: rgba(var(--ng-metal-rgb), 0.95);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 18px -6px rgba(var(--ng-paper-rgb), 0.45);
 }
 :root .ng-dock-dot { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -2px 4px rgba(0, 0, 0, 0.35); }
 

@@ -67,10 +67,6 @@ export function Home() {
             <dt>Entry</dt>
             <dd>By audition</dd>
           </div>
-          <div className="ng-hero-scroll" aria-hidden="true">
-            <span />
-            Scroll
-          </div>
         </dl>
       </section>
 

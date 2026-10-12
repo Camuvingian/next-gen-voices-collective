@@ -35,6 +35,8 @@ type Material = {
   glass?: number;
   /** tube diameter in glyph units; defaults per font */
   tubeWidth?: number;
+  /** blur radius of the glow (spread), multiplier */
+  spread?: number;
 };
 
 type Props = Material & {
@@ -43,7 +45,7 @@ type Props = Material & {
   font?: NeonFont;
   /** any CSS colour or variable; defaults to the site's neon colour */
   color?: string;
-  /** word-rise entrance, in ms of delay (hero) */
+  /** word-rise entrance, in ms of delay (hero). Material props multiply the visitor's neon settings. */
   rise?: number;
   className?: string;
   style?: CSSProperties;
@@ -83,13 +85,16 @@ function NeonMaterial({
   glow = 1,
   glass = 0.72,
   tubeWidth = 7,
+  spread = 1,
 }: Material & { id: string; box: [number, number, number, number]; shape: ReactNode; solid?: boolean }) {
   const light = clamp(intensity, 0, 2);
   const halo = clamp(glow, 0, 2);
   const refl = clamp(glass, 0, 1);
-  const m = clamp(tubeWidth, 1, 14);
+  const m = clamp(tubeWidth, 1, 20);
+  const blur = clamp(spread, 0.3, 2.5) * (solid ? 1.6 : 1);
   const [x, y, w, h] = box;
-  const region = { x: x - 110, y: y - 110, width: w + 220, height: h + 220, filterUnits: "userSpaceOnUse", colorInterpolationFilters: "sRGB" } as const;
+  const pad = 60 + m * 3.4 * blur * 3;
+  const region = { x: x - pad, y: y - pad, width: w + pad * 2, height: h + pad * 2, filterUnits: "userSpaceOnUse", colorInterpolationFilters: "sRGB" } as const;
   const url = (name: string) => `url(#${id}-${name})`;
   const layer = (stroke: string, width: number, extra: Record<string, unknown> = {}) => (
     <use href={`#${id}-shape`} stroke={stroke} fill={solid ? stroke : "none"} strokeWidth={width} {...extra} />
@@ -102,10 +107,10 @@ function NeonMaterial({
           {shape}
         </g>
         <filter id={`${id}-spill`} {...region}>
-          <feGaussianBlur stdDeviation={m * 3.4 * (solid ? 1.6 : 1)} />
+          <feGaussianBlur stdDeviation={m * 3.4 * blur} />
         </filter>
         <filter id={`${id}-halo`} {...region}>
-          <feGaussianBlur stdDeviation={m * 0.95 * (solid ? 1.6 : 1)} />
+          <feGaussianBlur stdDeviation={m * 0.95 * blur} />
         </filter>
         <filter id={`${id}-aura`} {...region}>
           <feGaussianBlur stdDeviation={m * 0.25} />
@@ -219,7 +224,14 @@ export function NeonSign({ children: text, font, color, rise, className, style, 
   const base = `ngn${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const key = font ?? neon.font;
   const preset = FONTS[key] ?? { family: key, tube: 2.4 };
-  const material: Material = { intensity, glow, glass: glass ?? 0.85, tubeWidth: tubeWidth ?? preset.tube };
+  // per-sign values scale the visitor's settings from the neon menu
+  const material: Material = {
+    intensity: (intensity ?? 1) * neon.intensity,
+    glow: (glow ?? 1) * neon.glow,
+    glass: glass ?? neon.glass,
+    tubeWidth: (tubeWidth ?? preset.tube ?? 7) * neon.thickness,
+    spread: neon.spread,
+  };
   const words = text.split(/\s+/).filter(Boolean);
 
   return (

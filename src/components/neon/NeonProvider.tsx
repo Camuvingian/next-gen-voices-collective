@@ -1,12 +1,15 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { applyNeonSettings } from "./neonBoot";
 import type { NeonFont } from "./NeonSign";
 
 /**
- * Site-wide neon settings: whether the signs are switched on, and the default
- * lettering. Remembered per visitor (localStorage) and mirrored onto <html>
- * as data-neon="on|off" so CSS can power every sign down at once.
+ * Site-wide neon settings (the controls in the neon menu): power, lettering,
+ * colour and the glass/light material. Remembered per visitor (localStorage
+ * "ng-neon"). Power and colour are applied to <html> by applyNeonSettings,
+ * which also runs as an inline <head> script so a reload paints the saved
+ * look straight away (NeonBootScript).
  */
 
 export const NEON_FONTS: { value: NeonFont; label: string }[] = [
@@ -15,66 +18,125 @@ export const NEON_FONTS: { value: NeonFont; label: string }[] = [
   { value: "deco", label: "Deco" },
 ];
 
-const DEFAULT_FONT: NeonFont = "script";
-const KEY_ON = "ng-neon-on";
-const KEY_FONT = "ng-neon-font";
+/** The neon colour options from tokens.css ("red" = no attribute). */
+export const NEON_COLOURS = [
+  { value: "red", label: "Neon red", hex: "#ff2e3f" },
+  { value: "ruby", label: "Ruby", hex: "#d1112b" },
+  { value: "white", label: "White neon", hex: "#f4f1ea" },
+  { value: "blue", label: "Blue note", hex: "#4fc3ff" },
+  { value: "pink", label: "Neon pink", hex: "#ff5fa2" },
+  { value: "violet", label: "Violet", hex: "#b26bff" },
+] as const;
 
-type NeonCtx = {
+export type NeonSettings = {
   on: boolean;
   font: NeonFont;
-  setOn: (on: boolean) => void;
-  setFont: (font: NeonFont) => void;
+  /** a NEON_COLOURS value, or a custom "#rrggbb" */
+  colour: string;
+  /** tube light / brightness, 0–2 */
+  intensity: number;
+  /** wall glow strength, 0–2 */
+  glow: number;
+  /** glow blur radius (spread), multiplier 0.3–2.5 */
+  spread: number;
+  /** glass reflections, 0–1 */
+  glass: number;
+  /** tube thickness, multiplier of the lettering's own width 0.5–2 */
+  thickness: number;
 };
 
-const Ctx = createContext<NeonCtx>({ on: true, font: DEFAULT_FONT, setOn: () => {}, setFont: () => {} });
+export const NEON_DEFAULTS: NeonSettings = {
+  on: true,
+  font: "script",
+  colour: "red",
+  intensity: 1,
+  glow: 1,
+  spread: 1,
+  glass: 0.85,
+  thickness: 1,
+};
 
-const read = (key: string) => {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null; // storage blocked: defaults
-  }
+const KEY = "ng-neon";
+
+type NeonCtx = NeonSettings & {
+  set: <K extends keyof NeonSettings>(key: K, value: NeonSettings[K]) => void;
+  reset: () => void;
 };
-const write = (key: string, value: string) => {
+
+const Ctx = createContext<NeonCtx>({ ...NEON_DEFAULTS, set: () => {}, reset: () => {} });
+
+/* ── storage ──────────────────────────────────────────── */
+function load(): Partial<NeonSettings> | null {
   try {
-    localStorage.setItem(key, value);
+    const raw = localStorage.getItem(KEY);
+    return raw ? (JSON.parse(raw) as Partial<NeonSettings>) : null;
   } catch {
-    /* storage blocked: the choice lasts this visit */
+    return null; // storage blocked or corrupt: defaults
   }
-};
+}
+function save(s: NeonSettings) {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(s));
+  } catch {
+    /* storage blocked: settings last this visit */
+  }
+}
+
+function sanitize(saved: Partial<NeonSettings>): NeonSettings {
+  const num = (v: unknown, lo: number, hi: number, d: number) => (typeof v === "number" && Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : d);
+  const d = NEON_DEFAULTS;
+  return {
+    on: typeof saved.on === "boolean" ? saved.on : d.on,
+    font: NEON_FONTS.some((f) => f.value === saved.font) ? (saved.font as NeonFont) : d.font,
+    colour: typeof saved.colour === "string" && (/^#[0-9a-f]{6}$/i.test(saved.colour) || NEON_COLOURS.some((c) => c.value === saved.colour)) ? saved.colour : d.colour,
+    intensity: num(saved.intensity, 0, 2, d.intensity),
+    glow: num(saved.glow, 0, 2, d.glow),
+    spread: num(saved.spread, 0.3, 2.5, d.spread),
+    glass: num(saved.glass, 0, 1, d.glass),
+    thickness: num(saved.thickness, 0.5, 2, d.thickness),
+  };
+}
 
 export function NeonProvider({ children }: { children: ReactNode }) {
-  const [on, setOnState] = useState(true);
-  const [font, setFontState] = useState<NeonFont>(DEFAULT_FONT);
+  const [settings, setSettings] = useState<NeonSettings>(NEON_DEFAULTS);
+  const [restored, setRestored] = useState(false);
 
-  // restore the visitor's choices after hydration
+  // restore the visitor's settings after hydration (the server render uses the defaults;
+  // the <head> boot script has already painted the saved colour and power)
   useEffect(() => {
-    const savedOn = read(KEY_ON);
-    const savedFont = read(KEY_FONT);
-    const fontOk = NEON_FONTS.some((f) => f.value === savedFont);
-    if (savedOn === "off" || fontOk) {
-      // a single deferred update keeps the first paint identical to the server render
-      queueMicrotask(() => {
-        if (savedOn === "off") setOnState(false);
-        if (fontOk) setFontState(savedFont as NeonFont);
-      });
-    }
+    const saved = load();
+    queueMicrotask(() => {
+      if (saved) setSettings(sanitize(saved));
+      setRestored(true);
+    });
   }, []);
+
+  // signs are drawn in the saved lettering now: let them show
+  useEffect(() => {
+    if (restored) delete document.documentElement.dataset.neonPending;
+  }, [restored]);
 
   useEffect(() => {
-    document.documentElement.dataset.neon = on ? "on" : "off";
-  }, [on]);
+    if (restored) applyNeonSettings({ on: settings.on, colour: settings.colour }, false);
+  }, [restored, settings.on, settings.colour]);
 
-  const setOn = useCallback((v: boolean) => {
-    setOnState(v);
-    write(KEY_ON, v ? "on" : "off");
+  const set = useCallback(<K extends keyof NeonSettings>(key: K, value: NeonSettings[K]) => {
+    setSettings((s) => {
+      const next = { ...s, [key]: value };
+      save(next);
+      return next;
+    });
   }, []);
-  const setFont = useCallback((f: NeonFont) => {
-    setFontState(f);
-    write(KEY_FONT, f);
+  const reset = useCallback(() => {
+    setSettings((s) => {
+      const next = { ...NEON_DEFAULTS, on: s.on };
+      save(next);
+      return next;
+    });
   }, []);
 
-  return <Ctx.Provider value={{ on, font, setOn, setFont }}>{children}</Ctx.Provider>;
+  const value = useMemo(() => ({ ...settings, set, reset }), [settings, set, reset]);
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
 export const useNeon = () => useContext(Ctx);

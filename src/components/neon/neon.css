@@ -56,51 +56,92 @@
   44%, 100% { opacity: 1; }
 }
 
-/* ── Neon menu: glass button top right that expands ───── */
+/* ── Neon menu: glass power button in the top-right corner ── */
 .ngn-menu {
   --nm-size: 44px;
+  --nm-edge: 14px;
   position: fixed;
-  top: calc(84px + env(safe-area-inset-top, 0px));
-  right: calc(14px + env(safe-area-inset-right, 0px));
-  z-index: 38; /* below the nav (50) and the mobile menu (40) */
+  top: calc(var(--nm-edge) + env(safe-area-inset-top, 0px));
+  right: calc(var(--nm-edge) + env(safe-area-inset-right, 0px));
+  z-index: 55; /* above the nav (50) and the mobile menu (40) */
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  pointer-events: none; /* the closed panel's box must not block the nav underneath */
+}
+.ngn-menu-btn, .ngn-menu-panel { pointer-events: auto; }
+/* keep the nav's own buttons clear of the corner control */
+@media (max-width: 1400px) {
+  .ng-nav-inner { padding-right: calc(var(--gutter) + var(--nm-reserve, 56px)); }
 }
 .ngn-menu-btn {
+  position: relative;
   width: var(--nm-size); height: var(--nm-size);
   display: grid; place-items: center;
   border-radius: 50%;
-  border: 1px solid rgba(var(--ng-paper-rgb), 0.18);
-  background: linear-gradient(160deg, rgba(var(--ng-paper-rgb), 0.12), rgba(var(--ng-paper-rgb), 0.03)), rgba(16, 16, 16, 0.6);
-  box-shadow: inset 0 1px 0 rgba(var(--ng-paper-rgb), 0.28), 0 10px 26px -12px rgba(0, 0, 0, 0.9);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  color: var(--hl);
+  /* the border is a neon tube: coloured glass with a hot core, glowing onto the wall */
+  border: 2px solid color-mix(in srgb, var(--hl) 70%, #fff);
+  background: radial-gradient(closest-side, rgba(var(--hl-rgb), 0.1), rgba(14, 14, 14, 0.75) 80%);
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--hl-rgb), 0.9),
+    inset 0 0 8px rgba(var(--hl-rgb), 0.55),
+    0 0 0 1px rgba(var(--hl-rgb), 0.6),
+    0 0 8px rgba(var(--hl-rgb), 0.85),
+    0 0 22px rgba(var(--hl-rgb), 0.5),
+    0 0 48px rgba(var(--hl-rgb), 0.25);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: color-mix(in srgb, var(--hl) 55%, #fff);
   cursor: pointer;
-  transition: border-color var(--dur-fast), transform var(--dur) var(--ease-out);
+  transition: box-shadow var(--dur) var(--ease-out), border-color var(--dur), color var(--dur);
 }
-.ngn-menu-btn svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; transition: filter var(--dur), color var(--dur); }
-.ngn-menu.is-on .ngn-menu-btn svg { filter: drop-shadow(0 0 2px rgba(var(--hl-rgb), 0.9)) drop-shadow(0 0 7px rgba(var(--hl-rgb), 0.6)); }
-.ngn-menu.is-off .ngn-menu-btn { color: var(--ng-muted); }
-.ngn-menu-btn:hover, .ngn-menu.is-open .ngn-menu-btn { border-color: rgba(var(--hl-rgb), 0.5); }
+/* light spilling onto the wall behind the ring */
+.ngn-menu-btn::before {
+  content: ""; position: absolute; inset: -60%; z-index: -1; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(var(--hl-rgb), 0.22), rgba(var(--hl-rgb), 0.06) 55%, transparent);
+  transition: opacity var(--dur);
+}
+.ngn-menu-btn svg { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linejoin: round; filter: drop-shadow(0 0 2px rgba(var(--hl-rgb), 0.9)) drop-shadow(0 0 6px rgba(var(--hl-rgb), 0.5)); transition: transform var(--dur-slow) var(--ease-out), filter var(--dur); }
+.ngn-menu-btn:hover, .ngn-menu.is-open .ngn-menu-btn {
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--hl-rgb), 1),
+    inset 0 0 10px rgba(var(--hl-rgb), 0.7),
+    0 0 0 1px rgba(var(--hl-rgb), 0.8),
+    0 0 10px rgba(var(--hl-rgb), 1),
+    0 0 28px rgba(var(--hl-rgb), 0.65),
+    0 0 60px rgba(var(--hl-rgb), 0.35);
+}
+.ngn-menu:hover .ngn-menu-btn svg, .ngn-menu.is-open .ngn-menu-btn svg { transform: rotate(60deg); }
+/* switched off: dark glass ring, no light */
+.ngn-menu.is-off .ngn-menu-btn { border-color: rgba(var(--hl-rgb), 0.28); color: var(--ng-muted); box-shadow: inset 0 0 0 1px rgba(var(--hl-rgb), 0.18), 0 6px 18px -8px rgba(0, 0, 0, 0.9); }
+.ngn-menu.is-off .ngn-menu-btn::before { opacity: 0; }
+.ngn-menu.is-off .ngn-menu-btn svg { filter: none; }
+.ngn-menu-btn:focus-visible { outline: 2px solid var(--ng-fg); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .ngn-menu-btn svg { transition: none; } .ngn-menu:hover .ngn-menu-btn svg { transform: none; } }
 
 .ngn-menu-panel {
-  margin-top: 8px;
-  width: 236px;
-  padding: 14px 16px;
-  display: flex; flex-direction: column; gap: 14px;
-  border-radius: 14px;
+  position: relative;
+  margin-top: 10px;
+  width: min(300px, calc(100vw - 2 * var(--nm-edge)));
+  max-height: calc(100dvh - var(--nm-size) - var(--nm-edge) * 2 - 10px - env(safe-area-inset-top, 0px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px 18px 14px;
+  display: flex; flex-direction: column; gap: 16px;
+  border-radius: 16px;
   border: 1px solid rgba(var(--ng-paper-rgb), 0.16);
-  background: linear-gradient(160deg, rgba(var(--ng-paper-rgb), 0.1), rgba(var(--ng-paper-rgb), 0.02) 45%), rgba(14, 14, 14, 0.78);
+  background: linear-gradient(160deg, rgba(var(--ng-paper-rgb), 0.1), rgba(var(--ng-paper-rgb), 0.02) 45%), rgba(12, 12, 12, 0.82);
   box-shadow: inset 0 1px 0 rgba(var(--ng-paper-rgb), 0.24), 0 24px 50px -20px rgba(0, 0, 0, 0.95);
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
+  scrollbar-width: thin;
   transform-origin: top right;
-  opacity: 0; visibility: hidden; transform: translateY(-6px) scale(0.94);
+  opacity: 0; visibility: hidden; transform: translateY(-6px) scale(0.96);
   transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur) var(--ease-out), visibility 0s linear var(--dur);
 }
-/* expands on hover, on keyboard focus, or when tapped open */
+/* an invisible bridge over the gap, so the pointer can travel from the button into the panel */
+.ngn-menu-btn::after { content: ""; position: absolute; left: -40px; right: -14px; top: 100%; height: 14px; }
+/* expands on hover, keyboard focus, or when tapped open */
 .ngn-menu.is-open .ngn-menu-panel,
 .ngn-menu:has(:focus-visible) .ngn-menu-panel { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
 @media (hover: hover) {
@@ -108,27 +149,63 @@
 }
 
 .ngn-menu-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.ngn-menu-row--stack { flex-direction: column; align-items: stretch; gap: 8px; }
-.ngn-menu-label { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ng-muted); }
+.ngn-menu-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ng-fg); }
+.ngn-menu-label { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ng-muted); padding: 0; }
+.ngn-ctl { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.ngn-ctl-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.ngn-ctl-value { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--ng-fg); font-variant-numeric: tabular-nums; }
+.ngn-sliders { display: flex; flex-direction: column; gap: 16px; padding-top: 14px; border-top: 1px solid var(--ng-line); }
+.ngn-menu-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; border-top: 1px solid var(--ng-line); }
+.ngn-hint { font-size: 12px; color: var(--ng-muted); line-height: 1.3; }
 
-.ngn-switch { display: inline-flex; align-items: center; gap: 10px; min-height: 36px; padding: 0; border: 0; background: none; color: var(--ng-fg); cursor: pointer; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
-.ngn-switch-text { min-width: 2.4em; text-align: left; }
-.ngn-switch-track { position: relative; width: 44px; height: 24px; border-radius: 999px; background: rgba(var(--ng-paper-rgb), 0.12); border: 1px solid rgba(var(--ng-paper-rgb), 0.2); transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast); }
-.ngn-switch-knob { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--ng-muted); transition: transform var(--dur) var(--ease-out), background var(--dur-fast), box-shadow var(--dur-fast); }
-.ngn-switch[aria-checked="true"] .ngn-switch-track { background: rgba(var(--hl-rgb), 0.28); border-color: rgba(var(--hl-rgb), 0.7); box-shadow: 0 0 12px rgba(var(--hl-rgb), 0.45); }
-.ngn-switch[aria-checked="true"] .ngn-switch-knob { transform: translateX(20px); background: color-mix(in srgb, var(--hl) 40%, #fff); box-shadow: 0 0 8px rgba(var(--hl-rgb), 0.9); }
-.ngn-switch:focus-visible { outline: 2px solid var(--hl); outline-offset: 3px; border-radius: 6px; }
+/* power switch (shadcn Switch) */
+.ngn-power { display: inline-flex; align-items: center; gap: 10px; }
+.ngn-power-text { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ng-fg); min-width: 2.2em; text-align: right; }
+.ngn-switch[data-slot="switch"] { width: 44px; height: 24px; border: 1px solid rgba(var(--ng-paper-rgb), 0.22); }
+.ngn-switch[data-slot="switch"] [data-slot="switch-thumb"] { width: 18px; height: 18px; margin-left: 2px; translate: none; } /* Tailwind's translate would add to ours */
+.ngn-switch[data-slot="switch"][data-state="checked"] { background: rgba(var(--hl-rgb), 0.3); border-color: rgba(var(--hl-rgb), 0.75); box-shadow: 0 0 12px rgba(var(--hl-rgb), 0.45); }
+.ngn-switch[data-state="checked"] [data-slot="switch-thumb"] { transform: translateX(20px); background: color-mix(in srgb, var(--hl) 40%, #fff); box-shadow: 0 0 8px rgba(var(--hl-rgb), 0.9); }
+.ngn-switch[data-state="unchecked"] [data-slot="switch-thumb"] { background: var(--ng-muted); }
 
+/* lettering */
 .ngn-seg { display: grid; grid-template-columns: repeat(3, 1fr); padding: 3px; gap: 3px; border-radius: 10px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(var(--ng-paper-rgb), 0.1); }
-.ngn-seg-btn { min-height: 34px; border: 0; border-radius: 7px; background: transparent; color: var(--ng-muted); cursor: pointer; font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; transition: background var(--dur-fast), color var(--dur-fast); }
+.ngn-seg-btn { min-height: 36px; border: 0; border-radius: 7px; background: transparent; color: var(--ng-muted); cursor: pointer; font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; transition: background var(--dur-fast), color var(--dur-fast); }
 .ngn-seg-btn:hover { color: var(--ng-fg); }
 .ngn-seg-btn[aria-checked="true"] { background: rgba(var(--ng-paper-rgb), 0.12); color: var(--ng-fg); box-shadow: inset 0 1px 0 rgba(var(--ng-paper-rgb), 0.18); }
 .ngn-seg-btn:focus-visible { outline: 2px solid var(--hl); outline-offset: 1px; }
 
+/* light colour */
+.ngn-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.ngn-swatch {
+  position: relative; width: 28px; height: 28px; padding: 0; border-radius: 50%; cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--sw) 45%, #fff), var(--sw) 55%, color-mix(in srgb, var(--sw) 70%, #000));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 10px -2px var(--sw);
+  transition: transform var(--dur-fast), box-shadow var(--dur-fast);
+}
+.ngn-swatch:hover { transform: scale(1.08); }
+.ngn-swatch[aria-checked="true"], .ngn-swatch--custom.is-on { box-shadow: 0 0 0 2px var(--ng-bg), 0 0 0 3.5px var(--ng-fg), 0 0 14px var(--sw); }
+.ngn-swatch:focus-visible, .ngn-swatch--custom:has(:focus-visible) { outline: 2px solid var(--ng-fg); outline-offset: 3px; }
+.ngn-swatch--custom { display: grid; place-items: center; --sw: transparent; border-style: dashed; color: var(--ng-fg); }
+.ngn-swatch--custom:not(.is-on) { background: rgba(var(--ng-paper-rgb), 0.06); box-shadow: none; }
+.ngn-swatch--custom svg { fill: none; stroke: currentColor; stroke-width: 2; pointer-events: none; }
+.ngn-swatch--custom input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; border: 0; padding: 0; }
+
+/* sliders (shadcn Slider) */
+.ngn-slider { height: 22px; }
+.ngn-slider [data-slot="slider-track"] { height: 4px; background: rgba(var(--ng-paper-rgb), 0.14); }
+.ngn-slider [data-slot="slider-range"] { background: linear-gradient(90deg, rgba(var(--hl-rgb), 0.55), var(--hl)); box-shadow: 0 0 8px rgba(var(--hl-rgb), 0.6); }
+.ngn-slider [data-slot="slider-thumb"] { width: 16px; height: 16px; border: 1px solid rgba(var(--hl-rgb), 0.9); background: color-mix(in srgb, var(--hl) 25%, #fff); box-shadow: 0 0 10px rgba(var(--hl-rgb), 0.7); cursor: grab; }
+.ngn-slider [data-slot="slider-thumb"]:focus-visible { outline: 2px solid var(--ng-fg); outline-offset: 3px; }
+
 @media (max-width: 700px) {
-  .ngn-menu { --nm-size: 40px; top: calc(80px + env(safe-area-inset-top, 0px)); right: calc(12px + env(safe-area-inset-right, 0px)); }
+  .ngn-menu { --nm-size: 40px; --nm-edge: 12px; }
+  .ng-nav-inner { --nm-reserve: 48px; }
 }
 
 /* the back-to-top sign powers down with the rest */
 :root[data-neon="off"] .ng-totop svg { filter: brightness(0.35); }
 :root[data-neon="off"] .ng-totop { animation: none; background: none; }
+
+/* saved lettering differs from the server render: hold the signs until React redraws them */
+:root[data-neon-pending] .ng-neon-sign { visibility: hidden; }

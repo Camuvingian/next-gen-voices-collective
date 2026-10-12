@@ -173,13 +173,10 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .ng-hero-facts::before { content: ""; position: absolute; top: -1px; left: var(--gutter); width: 80px; height: 1px; background: var(--ng-accent); }
 .ng-hero-facts dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ng-muted); font-weight: 500; }
 .ng-hero-facts dd { margin: 4px 0 0; font-family: var(--font-display); font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
-.ng-hero-scroll { justify-self: end; align-self: end; display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ng-muted); }
-.ng-hero-scroll span { width: 1px; height: 34px; background: linear-gradient(var(--ng-accent), transparent); animation: ng-scroll 2s var(--ease-in-out) infinite; transform-origin: top; }
 @keyframes ng-scroll { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
 @media (max-width: 640px) {
   .ng-hero { padding-top: 96px; min-height: 0; }
   .ng-hero-facts { grid-template-columns: repeat(3, auto); justify-content: space-between; }
-  .ng-hero-scroll { display: none; }
   .ng-hero-ctas .ng-btn { flex: 1 1 100%; }
 }
 

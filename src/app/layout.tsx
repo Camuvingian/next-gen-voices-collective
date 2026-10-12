@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { NeonBootScript } from "@/components/neon/NeonBootScript";
 import { Shell } from "@/components/noir/Shell";
 import { SITE } from "@/lib/content";
 import { fontVariables } from "./fonts";
@@ -11,7 +12,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-GB" className={fontVariables}>
+    // the boot script sets the saved neon colour/power on <html> before React hydrates
+    <html lang="en-GB" className={fontVariables} suppressHydrationWarning>
+      <head>
+        <NeonBootScript />
+      </head>
       <body>
         <Shell>{children}</Shell>
       </body>

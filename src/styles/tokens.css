@@ -30,7 +30,7 @@
   --ng-danger: #ff7a6b;
   --ng-success: #6fd6a1;
 
-  /* Brand red: logo and sound waves (fixed, not affected by the neon colour) */
+  /* Brand colour: logo and sound waves. Neon red by default; each neon colour below brings its own set */
   --ng-glow: 222, 24, 44;      /* waves: bright deep red … */
   --ng-glow-2: 128, 10, 24;    /* … into oxblood */
   --ng-light: 215, 215, 215;   /* white follow-spot in photo placeholders */
@@ -94,8 +94,8 @@
 }
 
 /* Neon colour options (data-ng-hl on <html>; no attribute = neon red) */
-:root[data-ng-hl="ruby"]   { --hl: #d1112b; --hl-rgb: 209, 17, 43;   --hl-ink: #8a0b1c; --hl-fg: #ffffff; --hl-text: #ff3a50; --hl-2: #ff5a66; }
-:root[data-ng-hl="white"]  { --hl: #f4f1ea; --hl-rgb: 244, 241, 234; --hl-ink: #333333; --hl-fg: #0b0b0b; --hl-text: #f4f1ea; --hl-2: #ffffff; }
-:root[data-ng-hl="blue"]   { --hl: #4fc3ff; --hl-rgb: 79, 195, 255;  --hl-ink: #145f8a; --hl-fg: #0b0b0b; --hl-text: #4fc3ff; --hl-2: #b0e4ff; }
-:root[data-ng-hl="pink"]   { --hl: #ff5fa2; --hl-rgb: 255, 95, 162;  --hl-ink: #a3174f; --hl-fg: #0b0b0b; --hl-text: #ff5fa2; --hl-2: #ffb0d0; }
-:root[data-ng-hl="violet"] { --hl: #b26bff; --hl-rgb: 178, 107, 255; --hl-ink: #5a2bc4; --hl-fg: #0b0b0b; --hl-text: #b26bff; --hl-2: #dcc0ff; }
+:root[data-ng-hl="ruby"]   { --hl: #d1112b; --hl-rgb: 209, 17, 43;   --hl-ink: #8a0b1c; --hl-fg: #ffffff; --hl-text: #ff3a50; --hl-2: #ff5a66; --ng-glow: 182, 15, 37; --ng-glow-2: 104, 8, 22; --ng-edge: #860b1c; --ng-secondary: #49060f; --ng-shine: #f6cfd5; --ng-logo-accent: #d31d36; }
+:root[data-ng-hl="white"]  { --hl: #f4f1ea; --hl-rgb: 244, 241, 234; --hl-ink: #333333; --hl-fg: #0b0b0b; --hl-text: #f4f1ea; --hl-2: #ffffff; --ng-glow: 212, 210, 204; --ng-glow-2: 122, 120, 117; --ng-edge: #9c9a96; --ng-secondary: #555452; --ng-shine: #fdfcfb; --ng-logo-accent: #f5f2eb; }
+:root[data-ng-hl="blue"]   { --hl: #4fc3ff; --hl-rgb: 79, 195, 255;  --hl-ink: #145f8a; --hl-fg: #0b0b0b; --hl-text: #4fc3ff; --hl-2: #b0e4ff; --ng-glow: 69, 170, 222; --ng-glow-2: 40, 98, 128; --ng-edge: #337da3; --ng-secondary: #1c4459; --ng-shine: #dcf3ff; --ng-logo-accent: #58c6ff; }
+:root[data-ng-hl="pink"]   { --hl: #ff5fa2; --hl-rgb: 255, 95, 162;  --hl-ink: #a3174f; --hl-fg: #0b0b0b; --hl-text: #ff5fa2; --hl-2: #ffb0d0; --ng-glow: 222, 83, 141; --ng-glow-2: 128, 48, 81; --ng-edge: #a33d68; --ng-secondary: #592139; --ng-shine: #ffdfec; --ng-logo-accent: #ff67a7; }
+:root[data-ng-hl="violet"] { --hl: #b26bff; --hl-rgb: 178, 107, 255; --hl-ink: #5a2bc4; --hl-fg: #0b0b0b; --hl-text: #b26bff; --hl-2: #dcc0ff; --ng-glow: 155, 93, 222; --ng-glow-2: 89, 54, 128; --ng-edge: #7244a3; --ng-secondary: #3e2559; --ng-shine: #f0e1ff; --ng-logo-accent: #b672ff; }
