@@ -13,7 +13,7 @@ import { NEON_COLOURS, NEON_DEFAULTS, NEON_FONTS, useNeon, type NeonSettings } f
  * glass reflections and tube thickness.
  */
 
-type SliderKey = Exclude<keyof NeonSettings, "on" | "font" | "colour">;
+type SliderKey = Exclude<keyof NeonSettings, "on" | "font" | "colour" | "piano">;
 
 const SLIDERS: { key: SliderKey; label: string; min: number; max: number; step: number; unit?: string }[] = [
   { key: "intensity", label: "Brightness", min: 0, max: 2, step: 0.05 },
@@ -87,7 +87,19 @@ export function NeonMenu() {
         </svg>
       </button>
 
-      <div id="ngn-menu-panel" className="ngn-menu-panel" role="group" aria-label="Neon sign controls">
+      <div id="ngn-menu-panel" className="ngn-menu-panel" role="group" aria-label="Site controls">
+        <div className="ngn-menu-row ngn-menu-row--piano">
+          <label htmlFor="ngn-piano" className="ngn-menu-title">
+            Piano Scroll
+          </label>
+          <span className="ngn-power">
+            <span className="ngn-power-text" aria-hidden="true">
+              {neon.piano ? "On" : "Off"}
+            </span>
+            <Switch id="ngn-piano" className="ngn-switch" checked={neon.piano} onCheckedChange={(v) => neon.set("piano", v)} />
+          </span>
+        </div>
+
         <div className="ngn-menu-row">
           <label htmlFor="ngn-power" className="ngn-menu-title">
             Neon signs

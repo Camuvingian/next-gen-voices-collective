@@ -8,6 +8,7 @@
 @import "../styles/noir.css";
 @import "../styles/glass.css";
 @import "../components/neon/neon.css";
+@import "../components/piano-rail/NextGenPianoRail.css";
 @import "../components/brand/NextGenLogo.css";
 
 /* Noir Club is dark-only; the dark variant is always on. */

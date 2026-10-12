@@ -10,8 +10,10 @@
  *              tokens set inline for a custom "#rrggbb"
  *  - lettering other than the default → data-neon-pending, which hides the
  *    signs until React has drawn them in the saved lettering
+ *  - Piano Scroll on → data-ngp-open, so the page is already offset for the
+ *    piano rail on first paint (boot only; the rail manages it afterwards)
  */
-export function applyNeonSettings(settings?: { on?: boolean; colour?: string; font?: string } | null, pendingFont?: boolean) {
+export function applyNeonSettings(settings?: { on?: boolean; colour?: string; font?: string; piano?: boolean } | null, pendingFont?: boolean) {
   const root = document.documentElement;
   let s = settings;
   if (s === undefined) {
@@ -58,4 +60,5 @@ export function applyNeonSettings(settings?: { on?: boolean; colour?: string; fo
   else delete root.dataset.ngHl;
 
   if (pendingFont !== false && s.font && s.font !== "script") root.dataset.neonPending = "";
+  if (pendingFont !== false && s.piano === true) root.dataset.ngpOpen = "";
 }

@@ -43,6 +43,8 @@ export type NeonSettings = {
   glass: number;
   /** tube thickness, multiplier of the lettering's own width 0.5–2 */
   thickness: number;
+  /** Piano Scroll: the piano rail down the left edge that tracks scroll progress */
+  piano: boolean;
 };
 
 export const NEON_DEFAULTS: NeonSettings = {
@@ -54,6 +56,7 @@ export const NEON_DEFAULTS: NeonSettings = {
   spread: 1,
   glass: 0.85,
   thickness: 1,
+  piano: false,
 };
 
 const KEY = "ng-neon";
@@ -94,6 +97,7 @@ function sanitize(saved: Partial<NeonSettings>): NeonSettings {
     spread: num(saved.spread, 0.3, 2.5, d.spread),
     glass: num(saved.glass, 0, 1, d.glass),
     thickness: num(saved.thickness, 0.5, 2, d.thickness),
+    piano: typeof saved.piano === "boolean" ? saved.piano : d.piano,
   };
 }
 
@@ -129,7 +133,7 @@ export function NeonProvider({ children }: { children: ReactNode }) {
   }, []);
   const reset = useCallback(() => {
     setSettings((s) => {
-      const next = { ...NEON_DEFAULTS, on: s.on };
+      const next = { ...NEON_DEFAULTS, on: s.on, piano: s.piano };
       save(next);
       return next;
     });

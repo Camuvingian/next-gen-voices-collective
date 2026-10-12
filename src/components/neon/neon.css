@@ -209,3 +209,6 @@
 
 /* saved lettering differs from the server render: hold the signs until React redraws them */
 :root[data-neon-pending] .ng-neon-sign { visibility: hidden; }
+
+/* Piano Scroll heads the menu, divided from the neon controls below */
+.ngn-menu-row--piano { padding-bottom: 14px; margin-bottom: -2px; border-bottom: 1px solid var(--ng-line); }

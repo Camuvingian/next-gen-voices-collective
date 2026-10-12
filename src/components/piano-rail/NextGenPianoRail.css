@@ -1,0 +1,205 @@
+/* ──────────────────────────────────────────────────────────────
+   NextGen Piano Rail: scoped styles (classes prefixed ngp-).
+   Every colour and size is a CSS variable with a default, so it inherits
+   the host theme (falls back to the NextGen Noir values).
+   ────────────────────────────────────────────────────────────── */
+
+:root {
+  --ngp-rail-w: 64px;
+}
+@media (max-width: 700px) { :root { --ngp-rail-w: 30px; } }
+
+.ngp-rail {
+  --ngp-accent: var(--hl, #ff2e3f);
+  --ngp-accent-rgb: var(--hl-rgb, 255, 46, 63);
+  --ngp-accent-fg: var(--hl-fg, #ffffff);
+  --ngp-fg: var(--ng-fg, #f1efea);
+  --ngp-bed: #050505;
+  --ngp-ivory-edge: #c8c6c0;
+  --ngp-ivory: #fbfaf7;
+  --ngp-ivory-mid: #f1efea;
+  --ngp-ivory-end: #dedbd4;
+  --ngp-ebony: #1b1b1b;
+  --ngp-felt: #5c0d16;          /* the red key felt at the back of the keys */
+  --ngp-fallboard: 7px;         /* lacquered strip the keys disappear under */
+  --ngp-ease: var(--ease-in-out, cubic-bezier(0.76, 0, 0.24, 1));
+  --ngp-ease-out: var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1));
+
+  position: fixed; left: 0; top: 0; bottom: 0; width: var(--ngp-rail-w); z-index: 46;
+  background: var(--ngp-bed);
+  /* the keybed's cheek: a thin lit edge, then the rail's shadow on the page */
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.16), 2px 0 0 rgba(0, 0, 0, 0.9), 14px 0 30px -10px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+  transform: translateX(-105%);
+  transition: transform 600ms var(--ngp-ease);
+}
+.ngp-rail.is-open { transform: none; }
+
+/* fallboard: polished black lacquer with a red felt line, over the backs of the keys */
+.ngp-rail::before {
+  content: ""; position: absolute; z-index: 4; left: 0; top: 0; bottom: 0; width: var(--ngp-fallboard); pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent calc(100% - 2px), var(--ngp-felt) calc(100% - 2px)),
+    linear-gradient(90deg, #000 0%, #1a1a1a 45%, #090909 70%, #000 100%);
+  box-shadow: 3px 0 5px rgba(0, 0, 0, 0.75);
+}
+/* soft room light falling across the keyboard from the top */
+.ngp-rail::after {
+  content: ""; position: absolute; z-index: 5; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 35%, rgba(0, 0, 0, 0.18));
+  mix-blend-mode: soft-light;
+}
+.ngp-keys { position: absolute; inset: 0; touch-action: none; }
+
+.ngp-key {
+  position: absolute; left: 0; padding: 0; border: 0; cursor: pointer;
+  transform-origin: left center;
+  transition: transform 120ms var(--ngp-ease-out), filter 120ms, box-shadow 200ms;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Ivories ──────────────────────────────────────────── */
+.ngp-key.is-white {
+  width: 100%;
+  z-index: 1;
+  border-radius: 0 3px 3px 0;
+  background:
+    /* rounded long edges: light along the top edge, shade along the bottom */
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0, rgba(255, 255, 255, 0) 2px, rgba(0, 0, 0, 0) calc(100% - 4px), rgba(70, 60, 45, 0.22) calc(100% - 1px), rgba(0, 0, 0, 0.55) 100%),
+    /* satin top: brightest towards the playing end, cooler under the fallboard */
+    linear-gradient(90deg, #a9a59c 0%, #d9d6cf 7%, var(--ngp-ivory) 22%, var(--ngp-ivory-mid) 78%, #faf8f3 92%, var(--ngp-ivory-end) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+/* the front lip of the key, where a finger lands */
+.ngp-key.is-white::before {
+  content: ""; position: absolute; top: 1px; bottom: 1px; right: 0; width: 4px; border-radius: 0 3px 3px 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.16) 60%, rgba(0, 0, 0, 0.32));
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.85);
+}
+/* the faint grain of real ivory */
+.ngp-key.is-white::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0.35; mix-blend-mode: multiply;
+  background: repeating-linear-gradient(90deg, transparent 0 7px, rgba(150, 135, 110, 0.05) 7px 8px, transparent 8px 13px, rgba(150, 135, 110, 0.04) 13px 14px);
+}
+
+/* ── Ebonies ──────────────────────────────────────────── */
+.ngp-key.is-black {
+  width: 60%;
+  z-index: 2;
+  border-radius: 0 2px 2px 0;
+  background:
+    /* bevelled sides */
+    linear-gradient(180deg, #3d3d3d 0, #121212 14%, #0a0a0a 50%, #121212 86%, #000 100%),
+    #0a0a0a;
+  /* cast shadow onto the ivories, plus the dark gap around the key */
+  box-shadow:
+    0 0 0 1px #000,
+    3px 2px 4px rgba(0, 0, 0, 0.55),
+    6px 3px 9px -2px rgba(0, 0, 0, 0.45);
+}
+/* glossy lacquer reflection running along the key top */
+.ngp-key.is-black::before {
+  content: ""; position: absolute; left: 10%; right: 18%; top: 22%; height: 26%; border-radius: 3px; pointer-events: none;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.22) 30%, rgba(255, 255, 255, 0.34) 70%, rgba(255, 255, 255, 0.08) 100%);
+  filter: blur(0.4px);
+}
+/* the sloped front of the key, catching the light */
+.ngp-key.is-black::after {
+  content: ""; position: absolute; top: 12%; bottom: 12%; right: 0; width: 22%; border-radius: 0 2px 2px 0; pointer-events: none;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.07) 40%, rgba(255, 255, 255, 0.16));
+}
+
+/* ── Pressed: the key tips down at the front ──────────── */
+.ngp-key.is-white.is-down {
+  transform: scaleX(0.972);
+  filter: brightness(0.9) contrast(1.02);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -2px 3px rgba(0, 0, 0, 0.25);
+}
+.ngp-key.is-white.is-down::before { background: linear-gradient(90deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.3)); }
+.ngp-key.is-black.is-down {
+  transform: scaleX(0.95);
+  filter: brightness(0.75);
+  box-shadow: 0 0 0 1px #000, 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+.ngp-key.is-black.is-down::before { opacity: 0.45; }
+
+/* the scroll chord: keys held down, lit from below in the neon colour */
+.ngp-key.is-white.is-down:not(:active) {
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0, rgba(255, 255, 255, 0) 2px, rgba(0, 0, 0, 0) calc(100% - 4px), rgba(0, 0, 0, 0.5) 100%),
+    linear-gradient(90deg, #a09c93 0%, #d2cfc8 10%, #ecebe6 55%, color-mix(in srgb, var(--ngp-accent) 22%, #f3f1ec) 100%);
+}
+.ngp-key.is-white.is-lead {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset -3px 0 0 var(--ngp-accent), 0 0 14px -2px rgba(var(--ngp-accent-rgb), 0.8);
+}
+.ngp-key:hover:not(.is-down) { filter: brightness(1.03); }
+
+/* opening glissando when the rail slides in */
+.ngp-rail.is-intro .ngp-key.is-white { animation: ngp-gliss 0.5s calc(var(--i) * 28ms + 300ms) var(--ngp-ease-out) both; }
+@keyframes ngp-gliss {
+  0% { transform: scaleX(1); }
+  35% { transform: scaleX(0.965); filter: brightness(0.9); }
+  100% { transform: scaleX(1); }
+}
+
+/* ♪ play-while-scrolling: neon ring in the highlight colour, bottom-left corner */
+.ngp-sound {
+  position: absolute; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  width: 38px; height: 38px; padding: 0; border-radius: 50%; z-index: 6;
+  display: grid; place-items: center;
+  font-size: 17px; line-height: 1; cursor: pointer;
+  /* off: a lit neon ring around a glowing note */
+  border: 2px solid color-mix(in srgb, var(--ngp-accent) 70%, #fff);
+  background: radial-gradient(closest-side, rgba(var(--ngp-accent-rgb), 0.16), rgba(8, 8, 8, 0.92) 85%);
+  color: color-mix(in srgb, var(--ngp-accent) 55%, #fff);
+  text-shadow: 0 0 6px rgba(var(--ngp-accent-rgb), 0.9);
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--ngp-accent-rgb), 0.9),
+    inset 0 0 8px rgba(var(--ngp-accent-rgb), 0.5),
+    0 0 8px rgba(var(--ngp-accent-rgb), 0.8),
+    0 0 18px rgba(var(--ngp-accent-rgb), 0.45);
+  transition: background 200ms, color 200ms, box-shadow 200ms, transform 200ms var(--ngp-ease-out);
+}
+.ngp-sound:hover { transform: translateX(-50%) scale(1.06); box-shadow: inset 0 0 0 1px rgba(var(--ngp-accent-rgb), 1), inset 0 0 10px rgba(var(--ngp-accent-rgb), 0.65), 0 0 10px rgba(var(--ngp-accent-rgb), 1), 0 0 24px rgba(var(--ngp-accent-rgb), 0.6); }
+.ngp-sound:focus-visible { outline: 2px solid var(--ngp-fg); outline-offset: 3px; }
+/* on: the tube is fully lit */
+.ngp-sound.is-on {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ngp-accent) 88%, #fff), var(--ngp-accent) 55%, color-mix(in srgb, var(--ngp-accent) 88%, #000));
+  color: var(--ngp-accent-fg);
+  text-shadow: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 0 0 1px rgba(var(--ngp-accent-rgb), 0.8), 0 0 14px rgba(var(--ngp-accent-rgb), 1), 0 0 30px rgba(var(--ngp-accent-rgb), 0.6);
+}
+/* neon switched off in the menu: dark glass ring */
+:root[data-neon="off"] .ngp-sound:not(.is-on) { border-color: rgba(var(--ngp-accent-rgb), 0.35); color: var(--ng-muted, #9c9993); text-shadow: none; box-shadow: inset 0 0 0 1px rgba(var(--ngp-accent-rgb), 0.2); }
+
+/* floating show/hide button, bottom-left */
+.ngp-toggle {
+  --ngp-accent: var(--hl, #ff2e3f);
+  --ngp-accent-rgb: var(--hl-rgb, 255, 46, 63);
+  position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 60;
+  display: inline-flex; align-items: center; gap: 0; height: 44px; padding: 0 13px;
+  border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.22);
+  background: linear-gradient(180deg, rgba(40, 40, 40, 0.75), rgba(10, 10, 10, 0.75));
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  color: var(--ng-fg, #f1efea); cursor: pointer; opacity: 0.72;
+  font-family: var(--font-mono, "Josefin Sans", "Futura", sans-serif); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 10px 28px -10px rgba(0, 0, 0, 0.8);
+  animation: ngp-float 5s ease-in-out infinite;
+  transition: opacity 180ms, left 600ms var(--ease-in-out, cubic-bezier(0.76, 0, 0.24, 1)), border-color 180ms;
+}
+.ngp-toggle:hover, .ngp-toggle:focus-visible { opacity: 1; border-color: rgba(var(--ngp-accent-rgb), 0.7); }
+.ngp-toggle:focus-visible { outline: 2px solid var(--ngp-accent); outline-offset: 3px; }
+.ngp-toggle.is-open { left: calc(var(--ngp-rail-w) + 16px); color: var(--ngp-accent); }
+.ngp-toggle-label { max-width: 0; overflow: hidden; white-space: nowrap; transition: max-width 400ms var(--ease-out, ease), margin 400ms var(--ease-out, ease); }
+.ngp-toggle:hover .ngp-toggle-label, .ngp-toggle:focus-visible .ngp-toggle-label { max-width: 120px; margin-left: 10px; }
+@keyframes ngp-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+@media (max-width: 700px) {
+  .ngp-rail { --ngp-fallboard: 4px; }
+  .ngp-sound { bottom: calc(10px + env(safe-area-inset-bottom, 0px)); width: 24px; height: 24px; font-size: 12px; border-width: 1.5px; }
+  .ngp-key.is-black { width: 64%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ngp-rail.is-intro .ngp-key, .ngp-toggle { animation: none; }
+  .ngp-rail, .ngp-toggle { transition: none; }
+}
