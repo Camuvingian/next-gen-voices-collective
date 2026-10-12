@@ -1,8 +1,9 @@
 "use client";
 
-import { Fragment, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { Fragment, useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { TUBE_FALLBACK, TUBE_GLYPHS } from "./glyphs";
 import { useNeon } from "./NeonProvider";
+import { registerNeonSign } from "./neonRegistry";
 
 /**
  * NeonSign: photorealistic neon lettering (lifted from media/neon-glass-preview.html).
@@ -233,9 +234,12 @@ export function NeonSign({ children: text, font, color, rise, className, style, 
     spread: neon.spread,
   };
   const words = text.split(/\s+/).filter(Boolean);
+  const self = useRef<HTMLSpanElement>(null);
+  // hand the hydrated element to NeonDirector (see neonRegistry.ts)
+  useEffect(() => (self.current ? registerNeonSign(self.current) : undefined), []);
 
   return (
-    <span className={["ng-neon-sign", className].filter(Boolean).join(" ")} data-font={key} style={{ color: color ?? "var(--hl)", ...style }}>
+    <span ref={self} className={["ng-neon-sign", className].filter(Boolean).join(" ")} data-font={key} style={{ color: color ?? "var(--hl)", ...style }}>
       <span className="ng-sr">{text}</span>
       {words.map((w, i) => {
         const id = `${base}-${i}`;

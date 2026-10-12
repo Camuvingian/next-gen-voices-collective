@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "@/lib/router";
 import { useNeon } from "@/components/neon/NeonProvider";
+import { watchNeonSigns } from "@/components/neon/neonRegistry";
 
 /**
  * NeonDirector: runs the neon signs (NeonSign).
@@ -13,7 +14,6 @@ import { useNeon } from "@/components/neon/NeonProvider";
  * Styling lives in components/neon/neon.css; this only times it.
  */
 
-const SIGN = ".ng-neon-sign";
 const STATES = ["is-armed", "is-igniting", "is-flicker", "is-lit"];
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
@@ -39,30 +39,41 @@ export function NeonDirector() {
       );
     };
 
+    const lit = new WeakSet<Element>();
+    io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            visible.add(e.target);
+            if (!lit.has(e.target)) {
+              lit.add(e.target);
+              const hero = !!e.target.closest(".ng-hero-line");
+              // the hero sign waits for the headline to finish rising
+              timers.push(window.setTimeout(() => flash(e.target, "is-igniting", 2600), hero ? 900 : rand(150, 500)));
+            }
+          } else visible.delete(e.target);
+        }
+      },
+      { threshold: 0.4 },
+    );
+
+    // only signs that have hydrated register here, so the classes below never
+    // collide with React's hydration of server-rendered signs
+    const armed = new Set<Element>();
+    let stopWatching = () => {};
     const start = window.setTimeout(() => {
-      const signs = Array.from(document.querySelectorAll(SIGN));
-      const lit = new WeakSet<Element>();
-      signs.forEach((el) => {
-        el.classList.remove(...STATES);
-        el.classList.add("is-armed");
+      stopWatching = watchNeonSigns((el, added) => {
+        if (added) {
+          el.classList.remove(...STATES);
+          el.classList.add("is-armed");
+          armed.add(el);
+          io!.observe(el);
+        } else {
+          armed.delete(el);
+          visible.delete(el);
+          io!.unobserve(el);
+        }
       });
-      io = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) {
-            if (e.isIntersecting) {
-              visible.add(e.target);
-              if (!lit.has(e.target)) {
-                lit.add(e.target);
-                const hero = !!e.target.closest(".ng-hero-line");
-                // the hero sign waits for the headline to finish rising
-                timers.push(window.setTimeout(() => flash(e.target, "is-igniting", 2600), hero ? 900 : rand(150, 500)));
-              }
-            } else visible.delete(e.target);
-          }
-        },
-        { threshold: 0.4 },
-      );
-      signs.forEach((el) => io!.observe(el));
 
       const tick = () => {
         const pool = Array.from(visible).filter((el) => !el.classList.contains("is-igniting"));
@@ -79,8 +90,9 @@ export function NeonDirector() {
     return () => {
       clearTimeout(start);
       timers.forEach(clearTimeout);
+      stopWatching();
       io?.disconnect();
-      document.querySelectorAll(SIGN).forEach((el) => el.classList.remove(...STATES));
+      armed.forEach((el) => el.classList.remove(...STATES));
     };
   }, [route, on]);
 
