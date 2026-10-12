@@ -5,7 +5,7 @@ import { Link, ROUTES, ROUTE_LABELS, useRouter } from "@/lib/router";
 import { SITE } from "@/lib/content";
 import { Logo, LogoMark } from "@/components/brand/Logo";
 import { ButtonLink } from "@/components/noir/primitives";
-import { HarmonicField } from "./HarmonicField";
+import { SiteWaves } from "./SiteWaves";
 import { NeonSign } from "@/components/neon/NeonSign";
 
 /** Stamped at build time; the site redeploys far more often than yearly. */
@@ -102,7 +102,7 @@ export function Footer() {
   return (
     <footer className="ng-footer">
       <section className="ng-footer-cta">
-        <HarmonicField className="ng-footer-field" density={10} intensity={0.8} />
+        <SiteWaves className="ng-footer-field" density={10} intensity={0.8} />
         <div className="ng-wrap ng-footer-cta-inner">
           <p className="ng-eyebrow">Next intake</p>
           <h2 className="ng-display ng-footer-title">

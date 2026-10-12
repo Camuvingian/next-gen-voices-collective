@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:e2e": "node scripts/nextgen-waves/build-preview.mjs && playwright test",
+    "build:waves-preview": "node scripts/nextgen-waves/build-preview.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "9.8.1",

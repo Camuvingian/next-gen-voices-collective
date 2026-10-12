@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { HarmonicField } from "@/components/noir/HarmonicField";
+import { SiteWaves } from "@/components/noir/SiteWaves";
 import { MediaSlot } from "@/components/noir/MediaSlot";
 import { PillarCard } from "@/components/noir/PillarCard";
 import { Lightbox } from "@/components/noir/Lightbox";
@@ -22,7 +22,7 @@ export function Home() {
     <>
       {/* ── Hero ───────────────────────────────── */}
       <section className="ng-hero">
-        <HarmonicField className="ng-hero-field" />
+        <SiteWaves className="ng-hero-field" />
         <div className="ng-hero-vignette" aria-hidden="true" />
         <div className="ng-wrap ng-hero-inner">
           <div className="ng-hero-mark">
