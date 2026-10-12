@@ -1,0 +1,75 @@
+/* Scoped, dependency-free SVG animation. All colour variables inherit from the host. */
+.ng-interlock {
+	display: inline-block;
+	height: auto;
+	max-width: 100%;
+	aspect-ratio: 228 / 188;
+	vertical-align: middle;
+	overflow: visible;
+	flex-shrink: 0;
+}
+.ng-interlock .ng-interlock__layer {
+	fill: none;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+.ng-interlock .ng-interlock__edge { stroke: var(--ng-edge, #d8e9f6); }
+.ng-interlock .ng-interlock__core { stroke: var(--ng-surface, #0b1524); }
+.ng-interlock .ng-interlock__tracer {
+	stroke: var(--ng-accent, #e8ff3c);
+	stroke-dasharray: 9 91;
+	filter: drop-shadow(0 0 2px var(--ng-accent, #e8ff3c));
+	opacity: 0;
+}
+.ng-interlock .ng-interlock__light {
+	stroke: var(--ng-shine, #ffffff);
+	stroke-dasharray: 1.5 98.5;
+	opacity: 0;
+}
+.ng-interlock .ng-interlock__sweep { opacity: 0; }
+.ng-interlock[data-animated='true'] .ng-interlock__edge path,
+.ng-interlock[data-animated='true'] .ng-interlock__core path,
+.ng-interlock[data-animated='true'] .ng-interlock__accent path {
+	stroke-dasharray: 100 100;
+	animation: ng-interlock-draw var(--ng-duration, 8s) cubic-bezier(.35,.05,.2,1) var(--ng-delay, 0s) var(--ng-repeat, 1) both;
+}
+.ng-interlock[data-animated='true'] .ng-interlock__edge path:nth-child(2),
+.ng-interlock[data-animated='true'] .ng-interlock__core path:nth-child(2),
+.ng-interlock[data-animated='true'] .ng-interlock__accent path:nth-child(2) {
+	animation-delay: var(--ng-path-delay, .25s);
+}
+.ng-interlock[data-animated='true'] .ng-interlock__tracer,
+.ng-interlock[data-animated='true'] .ng-interlock__light {
+	animation: ng-interlock-light var(--ng-duration, 8s) linear var(--ng-delay, 0s) var(--ng-repeat, 1) both;
+}
+.ng-interlock[data-animated='true'] .ng-interlock__sweep {
+	animation: ng-interlock-shine var(--ng-duration, 8s) cubic-bezier(.2,.7,.2,1) var(--ng-delay, 0s) var(--ng-repeat, 1) both;
+}
+.ng-interlock[data-paused='true'] * { animation-play-state: paused !important; }
+@keyframes ng-interlock-draw {
+	0% { stroke-dashoffset: 100; }
+	27%, 100% { stroke-dashoffset: 0; }
+}
+@keyframes ng-interlock-light {
+	0% { stroke-dashoffset: 10; opacity: 0; }
+	4% { opacity: 1; }
+	30% { stroke-dashoffset: -91; opacity: 1; }
+	34%, 100% { stroke-dashoffset: -91; opacity: 0; }
+}
+@keyframes ng-interlock-shine {
+	0%, 40% { transform: translateX(-180px); opacity: 0; }
+	43% { opacity: 1; }
+	69% { transform: translateX(300px); opacity: 1; }
+	72%, 100% { transform: translateX(300px); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.ng-interlock *,
+	.ng-interlock[data-animated='true'] .ng-interlock__layer path {
+		animation: none !important;
+		stroke-dasharray: none !important;
+		stroke-dashoffset: 0 !important;
+	}
+	.ng-interlock .ng-interlock__tracer,
+	.ng-interlock .ng-interlock__light,
+	.ng-interlock .ng-interlock__reflection { display: none; }
+}

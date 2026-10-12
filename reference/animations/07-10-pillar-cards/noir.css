@@ -1,0 +1,265 @@
+/* ──────────────────────────────────────────────────────────────
+   Noir Club: page styling on top of styles.css (layout + components).
+   Film grain and vignette, art-deco type, glass neon signs, the deep-red
+   logo, wordmark shimmer, glass buttons, piano-key stripes, black-and-white
+   photos, and the four sheet-music pillar cards.
+   The piano rail's own styles live with its asset: src/assets/piano-rail/.
+   ────────────────────────────────────────────────────────────── */
+
+/* ── Grounds, grain, vignette ────────────────────────── */
+:root body {
+  background:
+    radial-gradient(90% 60% at 70% -10%, rgba(255, 255, 255, 0.05), transparent 60%),
+    var(--ng-bg);
+  background-attachment: fixed;
+  transition: padding-left 600ms var(--ease-in-out);
+}
+:root[data-ngp-open] body { padding-left: var(--ngp-rail-w); }
+:root .ng-nav { transition: left 600ms var(--ease-in-out), background-color var(--dur) var(--ease-out); }
+:root[data-ngp-open] .ng-nav { left: var(--ngp-rail-w); }
+/* film grain + projector vignette, above the page, below the controls */
+:root body::before,
+:root body::after { content: ""; position: fixed; inset: -50px; pointer-events: none; z-index: 44; }
+:root body::before { inset: 0; background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.55) 100%); }
+:root body::after {
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: ng-grain 0.9s steps(6) infinite;
+}
+@keyframes ng-grain {
+  0% { transform: translate(0, 0); } 20% { transform: translate(-18px, 12px); } 40% { transform: translate(14px, -20px); }
+  60% { transform: translate(-10px, -8px); } 80% { transform: translate(20px, 16px); } 100% { transform: translate(0, 0); }
+}
+:root .ng-hero-field { opacity: 0.95; }
+:root .ng-band { background: #111; }
+
+/* ── Type ────────────────────────────────────────────── */
+:root :is(.ng-display, .ng-hero-title, .ng-h1, .ng-h2, .ng-h3, .ng-pillar h3, .ng-steps h3, .ng-flow h3, .ng-gain h3, .ng-apply-aside h3, .ng-criteria strong, .ng-factgrid dd, .ng-hero-facts dd, .ng-contact-big, .ng-masonry-cap strong, .ng-lightbox-bar strong, .ng-dock-text strong, .ng-menu nav a, .ng-wordmark-top, .ng-marquee-item) {
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+:root .ng-hero-title { line-height: 0.98; font-size: clamp(3rem, 1.4rem + 7vw, 8.4rem); }
+:root .ng-h1 { line-height: 1; }
+:root .ng-h2 { line-height: 1.02; font-size: clamp(2.3rem, 1.5rem + 3.4vw, 4.6rem); }
+:root :is(.ng-statement-big, .ng-mosaic-cta .ng-display, .ng-quote blockquote) {
+  font-family: var(--font-sans); font-weight: 300; text-transform: none; letter-spacing: -0.01em; line-height: 1.18;
+}
+:root .ng-quote blockquote { font-size: var(--step-3); }
+:root .ng-hero-kicker { font-family: var(--font-script); text-transform: none; letter-spacing: 0.02em; font-size: 26px; font-weight: 400; color: var(--ng-brass); }
+:root .ng-eyebrow { letter-spacing: 0.22em; font-weight: 600; }
+:root .ng-eyebrow::before { width: 34px; height: 3px; background: linear-gradient(90deg, var(--ng-brass) 0 40%, transparent 40% 60%, var(--ng-brass) 60%); }
+:root .ng-dot { background: var(--hl); box-shadow: 0 0 10px rgba(var(--hl-rgb), 0.9); }
+:root .ng-step-n { font-family: var(--font-display); font-weight: 400; color: var(--ng-brass); }
+:root .ng-marquee-item:nth-child(even) { -webkit-text-stroke-color: var(--ng-brass); }
+:root .ng-marquee-item:nth-child(3n) {
+  text-transform: none; font-size: 1.15em; color: #fff4f3;
+  text-shadow: 0 0 2px #fff, 0 0 8px rgba(var(--hl-rgb), 0.9), 0 0 22px rgba(var(--hl-rgb), 0.6);
+}
+:root .ng-marquee-item svg { color: var(--ng-brass); }
+
+/* ── Neon signs: glass tubes with a white-hot core ───── */
+:root :is(.ng-display em, .ng-italic, .ng-h1 em, .ng-h2 em) {
+  position: relative;
+  font-family: var(--font-script);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  padding-inline: 0.06em 0.14em;
+  /* the tube: hot white core, tinted glass towards the edges, specular streak at the top */
+  background: linear-gradient(180deg,
+      #ffffff 0%,
+      #ffffff 18%,
+      color-mix(in srgb, var(--hl) 22%, #fff) 34%,
+      color-mix(in srgb, var(--hl) 55%, #fff) 58%,
+      color-mix(in srgb, var(--hl) 30%, #fff) 80%,
+      color-mix(in srgb, var(--hl) 12%, #fff) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 0.5px rgba(var(--hl-rgb), 0.55);
+  text-shadow:
+    0 0 1px rgba(255, 255, 255, 0.9),
+    0 0 4px rgba(var(--hl-rgb), 0.95),
+    0 0 10px rgba(var(--hl-rgb), 0.85),
+    0 0 22px rgba(var(--hl-rgb), 0.65),
+    0 0 48px rgba(var(--hl-rgb), 0.45),
+    0 0 96px rgba(var(--hl-rgb), 0.28);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  filter: brightness(1);
+}
+/* background-clip:text skips inline-block boxes, so the word-rise masks go inline inside signs */
+:root :is(.ng-display em, .ng-italic, .ng-h1 em, .ng-h2 em) :is(.ng-rise-mask, .ng-rise-word) {
+  display: inline; overflow: visible; animation: none;
+}
+/* an unlit tube before it ignites: dark glass with a faint tint */
+:root .ng-neon:not(.is-lit):not(.is-igniting) { filter: brightness(0.28) saturate(0.7); }
+:root .ng-neon.is-igniting { animation: ng-neon-ignite 2.6s linear both; }
+:root .ng-neon.is-flicker { animation: ng-neon-flicker 1.3s linear both; }
+@keyframes ng-neon-ignite {
+  0% { filter: brightness(0.2) saturate(0.6); }
+  5% { filter: brightness(1.15); }
+  8% { filter: brightness(0.22) saturate(0.6); }
+  13% { filter: brightness(1); }
+  15% { filter: brightness(0.3) saturate(0.7); }
+  21% { filter: brightness(1.1); }
+  23% { filter: brightness(0.45); }
+  27% { filter: brightness(1.05); }
+  44% { filter: brightness(1); }
+  46% { filter: brightness(0.6); }
+  48%, 100% { filter: brightness(1); }
+}
+@keyframes ng-neon-flicker {
+  0% { filter: brightness(1); }
+  6% { filter: brightness(0.25) saturate(0.6); }
+  10% { filter: brightness(1.05); }
+  26% { filter: brightness(1); }
+  30% { filter: brightness(0.3) saturate(0.6); }
+  33% { filter: brightness(0.95); }
+  37% { filter: brightness(0.4); }
+  44%, 100% { filter: brightness(1); }
+}
+/* the hero sign: larger, mounted lower right, with light spilling onto the wall */
+:root .ng-hero-line.ng-italic {
+  font-size: 1.14em;
+  line-height: 1.08;
+  padding-left: clamp(0px, 10vw, 180px);
+  margin-top: -0.04em;
+  isolation: isolate;
+}
+:root .ng-hero-line.ng-italic::after {
+  content: "";
+  position: absolute;
+  inset: 5% -6% -10% calc(clamp(0px, 10vw, 180px) - 6%);
+  z-index: -1;
+  background: radial-gradient(50% 55% at 50% 55%, rgba(var(--hl-rgb), 0.22), transparent 70%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+/* ── Logo: deep red gradient ──────────────────────────── */
+:root .ng-interlock {
+  --ng-edge: #a30f1d;
+  --ng-secondary: #5a0611;
+  --ng-accent: var(--ng-logo-accent);
+  --ng-shine: #ffd6da;
+}
+:root .ng-curtain-panel svg { --ng-surface: #0d0d0d; --ng-edge: #a30f1d; }
+
+/* ── Wordmark: deco caps with a shimmer every 8 s ─────── */
+:root .ng-wordmark-top { font-size: 25px; letter-spacing: 0.08em; }
+:root .ng-wordmark-bottom { font-family: var(--font-script); text-transform: none; letter-spacing: 0.02em; font-size: 16px; color: var(--ng-brass); margin-top: 1px; }
+:root .is-stacked .ng-wordmark-top { font-size: 34px; }
+:root .is-stacked .ng-wordmark-bottom { font-size: 20px; }
+:root .ng-nav .ng-wordmark-top {
+  background: linear-gradient(105deg, var(--ng-fg) 0%, var(--ng-fg) 42%, #ffffff 47%, #ffd9dc 50%, #ffffff 53%, var(--ng-fg) 58%, var(--ng-fg) 100%);
+  background-size: 320% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: ng-shimmer 8s ease-in-out 1.5s infinite;
+}
+@keyframes ng-shimmer {
+  0% { background-position: 100% 0; filter: none; }
+  14% { background-position: 0% 0; filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35)); }
+  18%, 100% { background-position: 0% 0; filter: none; }
+}
+
+/* ── Buttons: subtle gradient, glassy top edge ────────── */
+:root .ng-btn { --btn-track: 0.14em; letter-spacing: var(--btn-track); font-weight: 600; }
+:root .ng-btn--primary {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--hl) 78%, #fff) 0%, var(--hl) 42%, color-mix(in srgb, var(--hl) 72%, #000) 100%);
+  color: var(--hl-fg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.25), 0 8px 24px -10px rgba(var(--hl-rgb), 0.7);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+:root .ng-btn--outline {
+  border-color: rgba(var(--ng-metal-rgb), 0.5);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
+}
+:root .ng-dock-dot { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -2px 4px rgba(0, 0, 0, 0.35); }
+
+/* piano-key stripes: curtain edge and application card */
+:root .ng-curtain-panel::before,
+:root .ng-apply-card::before {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 15px, #0b0b0b 15px 17px),
+    linear-gradient(#f4f2ee, #d9d6cf);
+}
+:root .ng-apply-card::before { height: 10px; }
+
+/* photos go black and white; placeholders lit by a white follow-spot */
+:root .ng-media { border-radius: 2px; }
+:root .ng-media > svg, :root .ng-media img, :root .ng-media video { filter: grayscale(1) contrast(1.12); }
+:root .ng-media figcaption { font-family: var(--font-script); text-transform: none; letter-spacing: 0; font-size: 20px; padding: 0 10px 2px; background: #f1efea; color: #0b0b0b; }
+:root .ng-media-play { background: linear-gradient(180deg, color-mix(in srgb, var(--hl) 80%, #fff), var(--hl) 50%, color-mix(in srgb, var(--hl) 70%, #000)); }
+
+/* ── Noir pillar cards (sheet music & stage) ──────────── */
+.ng-jg { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 3px; background: radial-gradient(120% 100% at 50% 0%, #1e1e1e, var(--ng-bg-sunken) 75%); overflow: hidden; transition: box-shadow var(--dur) var(--ease-out); }
+.ng-pillar:hover .ng-jg { box-shadow: 0 0 0 1px rgba(var(--ng-metal-rgb), 0.5), 0 0 36px -10px rgba(var(--hl-rgb), 0.5); }
+.ng-jg svg { position: absolute; inset: 0; width: 100%; height: 100%; filter: none; }
+.ng-jg-label { position: absolute; right: 18px; bottom: 12px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ng-brass); }
+.ng-jg[data-run="false"] * { animation-play-state: paused !important; }
+.ng-jg-frame rect { stroke: rgba(var(--ng-metal-rgb), 0.55); stroke-width: 1; }
+.ng-jg-frame .ng-jg-frame-inner { stroke: rgba(var(--ng-metal-rgb), 0.25); }
+.ng-jg-frame path { stroke: rgba(var(--ng-metal-rgb), 0.45); stroke-width: 1; }
+.ng-jg-staff line { stroke: rgba(var(--ng-paper-rgb), 0.26); stroke-width: 1; }
+.ng-jg-note ellipse, .ng-jg-chord ellipse { fill: var(--ng-fg); }
+.ng-jg-note line, .ng-jg-chord line { stroke: var(--ng-fg); stroke-width: 1.6; }
+.ng-jg-note.is-accent ellipse { fill: var(--hl); }
+.ng-jg-note.is-accent line { stroke: var(--hl); }
+.ng-jg svg * { transform-box: view-box; }
+
+.ng-jg-guides path { stroke: rgba(var(--ng-paper-rgb), 0.22); stroke-width: 1; stroke-dasharray: 0.02 0.03; }
+.ng-jg-glide { animation: ng-jg-glide 4.2s cubic-bezier(.6,0,.25,1) infinite both; }
+@keyframes ng-jg-glide {
+  0% { transform: translate(0, 0); opacity: 0; }
+  8% { opacity: 1; }
+  18% { transform: translate(0, 0); }
+  58% { transform: translate(170px, var(--dy)); opacity: 1; }
+  62%, 100% { transform: translate(170px, var(--dy)); opacity: 0; }
+}
+.ng-jg-unison { opacity: 0; animation: ng-jg-unison 4.2s ease-out infinite both; filter: drop-shadow(0 0 6px rgba(var(--hl-rgb), 0.9)); }
+@keyframes ng-jg-unison { 0%, 57% { opacity: 0; } 62%, 88% { opacity: 1; } 100% { opacity: 0; } }
+.ng-jg-ring { stroke: var(--hl); stroke-width: 1.4; opacity: 0; transform-origin: 240px 90px; animation: ng-jg-ring 4.2s ease-out infinite both; }
+@keyframes ng-jg-ring { 0%, 60% { opacity: 0; transform: scale(0.6); } 64% { opacity: 0.9; } 90%, 100% { opacity: 0; transform: scale(2.6); } }
+
+.ng-jg-pop { opacity: 0; animation: ng-jg-pop 4.8s var(--ease-out) infinite both; }
+@keyframes ng-jg-pop { 0% { opacity: 0; transform: translateY(8px); } 6%, 72% { opacity: 1; transform: none; } 82%, 100% { opacity: 0.25; } }
+.ng-jg-chord { opacity: 0; animation: ng-jg-chord 4.8s ease-out infinite both; }
+.ng-jg-chord ellipse { fill: var(--hl); }
+.ng-jg-chord line { stroke: var(--hl); }
+@keyframes ng-jg-chord { 0%, 28% { opacity: 0; filter: none; } 34% { opacity: 1; filter: drop-shadow(0 0 10px rgba(var(--hl-rgb), 1)); } 50%, 82% { opacity: 1; filter: drop-shadow(0 0 4px rgba(var(--hl-rgb), 0.6)); } 96%, 100% { opacity: 0; } }
+.ng-jg-wave { stroke: var(--hl); stroke-width: 1.4; opacity: 0; transform-origin: 262px 115px; animation: ng-jg-wave 4.8s ease-out infinite both; }
+@keyframes ng-jg-wave { 0%, 33% { opacity: 0; transform: translateX(0) scale(0.8); } 38% { opacity: 0.9; } 70%, 100% { opacity: 0; transform: translateX(26px) scale(1.25); } }
+
+.ng-jg-metro-body { stroke: rgba(var(--ng-metal-rgb), 0.8); stroke-width: 1.4; fill: rgba(var(--ng-metal-rgb), 0.06); }
+.ng-jg-metro-scale { stroke: rgba(var(--ng-paper-rgb), 0.3); stroke-dasharray: 1 5; }
+.ng-jg-arm { transform-origin: 160px 136px; animation: ng-jg-swing 1.2s ease-in-out infinite alternate both; }
+.ng-jg-arm line { stroke: var(--ng-fg); stroke-width: 2; }
+.ng-jg-arm rect { fill: var(--hl); }
+.ng-jg-pivot { fill: var(--ng-brass); }
+@keyframes ng-jg-swing { from { transform: rotate(-26deg); } to { transform: rotate(26deg); } }
+.ng-jg-beat { fill: rgba(var(--ng-paper-rgb), 0.18); animation: ng-jg-beat 2.4s steps(1, end) infinite both; }
+@keyframes ng-jg-beat { 0% { fill: var(--hl); filter: drop-shadow(0 0 6px rgba(var(--hl-rgb), 1)); } 14%, 100% { fill: rgba(var(--ng-paper-rgb), 0.18); filter: none; } }
+
+.ng-jg-spot { animation: ng-jg-spot 5s ease-in-out infinite both; transform-origin: 160px 4px; }
+@keyframes ng-jg-spot { 0%, 100% { opacity: 0.55; transform: rotate(-9deg); } 40%, 60% { opacity: 1; transform: rotate(0deg); } }
+.ng-jg-pool { fill: rgba(255, 255, 255, 0.16); animation: ng-jg-pool 5s ease-in-out infinite both; }
+@keyframes ng-jg-pool { 0%, 100% { opacity: 0.2; } 40%, 60% { opacity: 1; } }
+.ng-jg-floor { stroke: rgba(var(--ng-metal-rgb), 0.4); }
+.ng-jg-mic line, .ng-jg-mic rect { stroke: var(--ng-fg); stroke-width: 1.8; }
+.ng-jg-mic rect { fill: #1a1a1a; }
+.ng-jg-mic .ng-jg-mic-grille { stroke: rgba(var(--ng-paper-rgb), 0.5); stroke-width: 1; }
+.ng-jg-carry path { stroke: var(--hl); stroke-width: 1.5; }
+.ng-jg-carry { opacity: 0; transform-origin: 160px 80px; animation: ng-jg-carry 2.1s ease-out infinite both; }
+@keyframes ng-jg-carry { 0% { opacity: 0; transform: scale(0.7); } 20% { opacity: 1; } 100% { opacity: 0; transform: scale(2.2); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ng-jg * { animation: none !important; }
+  .ng-jg-unison, .ng-jg-chord, .ng-jg-pop { opacity: 1 !important; }
+  .ng-jg-glide, .ng-jg-carry, .ng-jg-ring, .ng-jg-wave { opacity: 0 !important; }
+  :root body::after { animation: none; }
+  :root .ng-nav .ng-wordmark-top { animation: none; }
+}

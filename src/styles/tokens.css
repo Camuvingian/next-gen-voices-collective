@@ -1,0 +1,101 @@
+/* ──────────────────────────────────────────────────────────────
+   NextGen design tokens: "Noir Club"
+   A 1920s–30s supper club in black and white. Film grain, silver,
+   ivory keys. The only colour: the deep-red logo, the red sound waves,
+   and one neon sign colour for emphasised words.
+   Layout concept: full-bleed stage (media + 3D waves) alternating with
+   a tight 12-col grid; deco details (double rules, corner fans, piano
+   stripes) and glass neon for emphasis.
+
+   Token names map 1:1 onto a shadcn/ui theme in production:
+     --ng-bg → --background      --ng-fg → --foreground
+     --ng-bg-raised → --card     --ng-muted → --muted-foreground
+     --ng-line → --border        --ng-accent → --primary
+     --ng-accent-fg → --primary-foreground
+   ────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Grounds */
+  --ng-bg: #0b0b0b;
+  --ng-bg-raised: #151515;
+  --ng-bg-sunken: #050505;
+  --ng-fg: #f1efea;            /* paper white */
+  --ng-muted: #9c9993;         /* silver-grey */
+  --ng-line: rgba(255, 255, 255, 0.12);
+  --ng-line-strong: rgba(255, 255, 255, 0.28);
+  --ng-curtain: var(--ng-bg); /* same ground as the page, so the curtain reads as the site */
+  --ng-brass: #c9c5bd;         /* silver (nickel) details */
+  --ng-metal-rgb: 201, 197, 189;
+  --ng-paper-rgb: 241, 239, 234;
+  --ng-danger: #ff7a6b;
+  --ng-success: #6fd6a1;
+
+  /* Brand red: logo and sound waves (fixed, not affected by the neon colour) */
+  --ng-glow: 222, 24, 44;      /* waves: bright deep red … */
+  --ng-glow-2: 128, 10, 24;    /* … into oxblood */
+  --ng-light: 215, 215, 215;   /* white follow-spot in photo placeholders */
+
+  /* Neon colour (one at a time). Default: neon red. */
+  --hl: #ff2e3f;
+  --hl-rgb: 255, 46, 63;
+  --hl-ink: #a3121f;
+  --hl-fg: #ffffff;            /* text on the neon colour */
+  --hl-text: #ff5a66;          /* neon colour as plain text */
+  --hl-2: #ff8a80;
+
+  /* Semantic aliases used by components */
+  --ng-accent: var(--hl);
+  --ng-accent-ink: var(--hl-text);
+  --ng-accent-fg: var(--hl-fg);
+  --ng-accent-soft: rgba(var(--hl-rgb), 0.12);
+  --ng-em-fg: var(--hl-text);
+  --ng-em-bg: transparent;
+
+  /* Interlock logo: deep red gradient (NextGenLogo.css variables) */
+  --ng-edge: #a30f1d;
+  --ng-secondary: #5a0611;
+  --ng-surface: var(--ng-bg);  /* must match the colour behind the logo */
+  --ng-shine: #ffd6da;
+  --ng-logo-accent: #ff3446;
+
+  /* Type */
+  --font-display: "Limelight", "Poiret One", "Didot", Georgia, serif;   /* art-deco caps */
+  --font-script: "Yellowtail", "Brush Script MT", "Segoe Script", cursive; /* neon script */
+  --font-stencil: var(--font-script);
+  --font-sans: "Jost", "Futura", "Century Gothic", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Josefin Sans", "Futura", "Century Gothic", sans-serif;     /* labels, buttons */
+
+  /* Type scale (1.25, fluid at the top end) */
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --step-2: clamp(1.5rem, 1.3rem + 0.9vw, 2rem);
+  --step-3: clamp(2rem, 1.5rem + 2vw, 3.2rem);
+  --step-4: clamp(2.8rem, 1.8rem + 4.2vw, 5.4rem);
+  --step-5: clamp(2.4rem, 1rem + 8.4vw, 9.5rem); /* longest headline word ("COLLECTIVE,") fits a 320px phone */
+
+  /* Space + shape */
+  --gutter: clamp(16px, 4vw, 48px);
+  --section: clamp(72px, 10vw, 160px);
+  --radius-sm: 3px;
+  --radius: 8px;
+  --radius-pill: 999px;
+  --maxw: 1320px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --dur-fast: 180ms;
+  --dur: 520ms;
+  --dur-slow: 1100ms;
+
+  font-synthesis-weight: none; /* Limelight ships one weight: never fake-bold it */
+  color-scheme: dark;
+}
+
+/* Neon colour options (data-ng-hl on <html>; no attribute = neon red) */
+:root[data-ng-hl="ruby"]   { --hl: #d1112b; --hl-rgb: 209, 17, 43;   --hl-ink: #8a0b1c; --hl-fg: #ffffff; --hl-text: #ff3a50; --hl-2: #ff5a66; }
+:root[data-ng-hl="white"]  { --hl: #f4f1ea; --hl-rgb: 244, 241, 234; --hl-ink: #333333; --hl-fg: #0b0b0b; --hl-text: #f4f1ea; --hl-2: #ffffff; }
+:root[data-ng-hl="blue"]   { --hl: #4fc3ff; --hl-rgb: 79, 195, 255;  --hl-ink: #145f8a; --hl-fg: #0b0b0b; --hl-text: #4fc3ff; --hl-2: #b0e4ff; }
+:root[data-ng-hl="pink"]   { --hl: #ff5fa2; --hl-rgb: 255, 95, 162;  --hl-ink: #a3174f; --hl-fg: #0b0b0b; --hl-text: #ff5fa2; --hl-2: #ffb0d0; }
+:root[data-ng-hl="violet"] { --hl: #b26bff; --hl-rgb: 178, 107, 255; --hl-ink: #5a2bc4; --hl-fg: #0b0b0b; --hl-text: #b26bff; --hl-2: #dcc0ff; }

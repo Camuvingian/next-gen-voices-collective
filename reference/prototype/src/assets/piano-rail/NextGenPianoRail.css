@@ -1,0 +1,112 @@
+/* ──────────────────────────────────────────────────────────────
+   NextGen Piano Rail: scoped styles (classes prefixed ngp-).
+   Every colour and size is a CSS variable with a default, so it inherits
+   the host theme (falls back to the NextGen Noir values).
+   ────────────────────────────────────────────────────────────── */
+
+:root {
+  --ngp-rail-w: 60px;
+}
+@media (max-width: 700px) { :root { --ngp-rail-w: 26px; } }
+
+.ngp-rail {
+  --ngp-accent: var(--hl, #ff2e3f);
+  --ngp-accent-rgb: var(--hl-rgb, 255, 46, 63);
+  --ngp-accent-fg: var(--hl-fg, #ffffff);
+  --ngp-fg: var(--ng-fg, #f1efea);
+  --ngp-bed: #050505;
+  --ngp-ivory-edge: #c8c6c0;
+  --ngp-ivory: #fbfaf7;
+  --ngp-ivory-mid: #f1efea;
+  --ngp-ivory-end: #dedbd4;
+  --ngp-ebony: #1b1b1b;
+  --ngp-ease: var(--ease-in-out, cubic-bezier(0.76, 0, 0.24, 1));
+  --ngp-ease-out: var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1));
+
+  position: fixed; left: 0; top: 0; bottom: 0; width: var(--ngp-rail-w); z-index: 46;
+  background: var(--ngp-bed);
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.25), 10px 0 26px -8px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+  transform: translateX(-105%);
+  transition: transform 600ms var(--ngp-ease);
+}
+.ngp-rail.is-open { transform: none; }
+.ngp-keys { position: absolute; inset: 0; touch-action: none; }
+
+.ngp-key {
+  position: absolute; left: 0; padding: 0; border: 0; cursor: pointer;
+  transform-origin: left center;
+  transition: transform 140ms var(--ngp-ease-out), background 140ms, box-shadow 200ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.ngp-key.is-white {
+  width: 100%;
+  background: linear-gradient(90deg, var(--ngp-ivory-edge) 0%, var(--ngp-ivory) 14%, var(--ngp-ivory-mid) 82%, var(--ngp-ivory-end) 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: 0 4px 4px 0;
+  box-shadow: inset -2px 0 0 rgba(255, 255, 255, 0.5);
+  z-index: 1;
+}
+.ngp-key.is-black {
+  width: 62%;
+  background: linear-gradient(90deg, #000 0%, var(--ngp-ebony) 55%, #3a3a3a 92%, #262626 100%);
+  border-radius: 0 3px 3px 0;
+  box-shadow: 2px 1px 3px rgba(0, 0, 0, 0.7), inset -1px 0 0 rgba(255, 255, 255, 0.14);
+  z-index: 2;
+}
+.ngp-key.is-white.is-down {
+  transform: scaleX(0.965);
+  background: linear-gradient(90deg, #b3b0a9 0%, #e7e4dd 18%, #dcd9d2 100%);
+  box-shadow: inset -4px 0 0 var(--ngp-accent), 6px 0 18px -4px rgba(var(--ngp-accent-rgb), 0.75);
+}
+.ngp-key.is-white.is-lead { box-shadow: inset -6px 0 0 var(--ngp-accent), 10px 0 26px -4px rgba(var(--ngp-accent-rgb), 0.9); }
+.ngp-key.is-black.is-down { transform: scaleX(0.95); background: linear-gradient(90deg, #000, rgba(var(--ngp-accent-rgb), 0.6)); }
+.ngp-key:hover { filter: brightness(1.04); }
+
+/* opening glissando when the rail slides in */
+.ngp-rail.is-intro .ngp-key.is-white { animation: ngp-gliss 0.5s calc(var(--i) * 28ms + 300ms) var(--ngp-ease-out) both; }
+@keyframes ngp-gliss {
+  0% { transform: scaleX(1); }
+  35% { transform: scaleX(0.94); box-shadow: inset -5px 0 0 var(--ngp-accent); }
+  100% { transform: scaleX(1); }
+}
+
+/* ♪ play-while-scrolling */
+.ngp-sound {
+  position: absolute; left: 50%; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.45);
+  background: #0b0b0b; color: var(--ngp-fg); font-size: 16px; line-height: 1; cursor: pointer; z-index: 3;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+.ngp-sound.is-on { background: var(--ngp-accent); color: var(--ngp-accent-fg); border-color: var(--ngp-accent); box-shadow: 0 0 16px rgba(var(--ngp-accent-rgb), 0.7); }
+
+/* floating show/hide button, bottom-left */
+.ngp-toggle {
+  --ngp-accent: var(--hl, #ff2e3f);
+  --ngp-accent-rgb: var(--hl-rgb, 255, 46, 63);
+  position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 60;
+  display: inline-flex; align-items: center; gap: 0; height: 44px; padding: 0 13px;
+  border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.22);
+  background: linear-gradient(180deg, rgba(40, 40, 40, 0.75), rgba(10, 10, 10, 0.75));
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  color: var(--ng-fg, #f1efea); cursor: pointer; opacity: 0.72;
+  font-family: var(--font-mono, "Josefin Sans", "Futura", sans-serif); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 10px 28px -10px rgba(0, 0, 0, 0.8);
+  animation: ngp-float 5s ease-in-out infinite;
+  transition: opacity 180ms, left 600ms var(--ease-in-out, cubic-bezier(0.76, 0, 0.24, 1)), border-color 180ms;
+}
+.ngp-toggle:hover, .ngp-toggle:focus-visible { opacity: 1; border-color: rgba(var(--ngp-accent-rgb), 0.7); }
+.ngp-toggle:focus-visible { outline: 2px solid var(--ngp-accent); outline-offset: 3px; }
+.ngp-toggle.is-open { left: calc(var(--ngp-rail-w) + 16px); color: var(--ngp-accent); }
+.ngp-toggle-label { max-width: 0; overflow: hidden; white-space: nowrap; transition: max-width 400ms var(--ease-out, ease), margin 400ms var(--ease-out, ease); }
+.ngp-toggle:hover .ngp-toggle-label, .ngp-toggle:focus-visible .ngp-toggle-label { max-width: 120px; margin-left: 10px; }
+@keyframes ngp-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+@media (max-width: 700px) {
+  .ngp-sound { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); width: 22px; height: 22px; font-size: 12px; }
+  .ngp-key.is-black { width: 64%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ngp-rail.is-intro .ngp-key, .ngp-toggle { animation: none; }
+  .ngp-rail, .ngp-toggle { transition: none; }
+}

@@ -1,0 +1,75 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Noir Club: tokens first, then the ported prototype layout + noir layer. */
+@import "../styles/tokens.css";
+@import "../styles/styles.css";
+@import "../styles/noir.css";
+@import "../styles/glass.css";
+@import "../components/neon/neon.css";
+@import "../components/brand/NextGenLogo.css";
+
+/* Noir Club is dark-only; the dark variant is always on. */
+@custom-variant dark (&:is(:root *));
+
+/* next/font families → the prototype's font tokens */
+:root {
+  --font-display: var(--font-limelight), "Didot", Georgia, serif;
+  --font-script: var(--font-yellowtail), "Brush Script MT", cursive;
+  --font-sans: var(--font-jost), "Futura", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-josefin), "Futura", "Century Gothic", sans-serif;
+}
+
+/* shadcn/ui theme, mapped 1:1 from the Noir tokens (never hard-coded) */
+:root {
+  --background: var(--ng-bg);
+  --foreground: var(--ng-fg);
+  --card: var(--ng-bg-raised);
+  --card-foreground: var(--ng-fg);
+  --popover: var(--ng-bg-raised);
+  --popover-foreground: var(--ng-fg);
+  --primary: var(--ng-accent);
+  --primary-foreground: var(--ng-accent-fg);
+  --secondary: var(--ng-bg-raised);
+  --secondary-foreground: var(--ng-fg);
+  --muted: var(--ng-bg-sunken);
+  --muted-foreground: var(--ng-muted);
+  --accent: var(--ng-accent-soft);
+  --accent-foreground: var(--ng-fg);
+  --destructive: var(--ng-danger);
+  --border: var(--ng-line);
+  --input: var(--ng-line-strong);
+  --ring: var(--ng-accent);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-neon: var(--hl);
+  --font-display: var(--font-display);
+  --font-script: var(--font-script);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --radius-sm: var(--radius-sm);
+  --radius-lg: var(--radius);
+}
+
+/* overscroll / rubber-band areas show the same ground as the page */
+html { background: var(--ng-bg); }

@@ -1,0 +1,134 @@
+/* ──────────────────────────────────────────────────────────────
+   Neon signs (NeonSign.tsx): word-sized SVG signs that sit on the
+   text baseline. Glass is always drawn; only .ngn-light ignites,
+   flickers and switches off, so an unlit sign shows its tubes.
+   ────────────────────────────────────────────────────────────── */
+
+.ng-neon-sign {
+  /* tinted glass for the black club wall */
+  --neon-glass-tint: #171113;
+  font-style: normal;
+  font-weight: 400;
+  text-transform: none; /* headline caps must not leak into the lettering */
+  letter-spacing: 0;
+  white-space: normal;
+}
+.ngn-word {
+  display: inline-block;
+  overflow: visible; /* the glow spills past the letters */
+}
+/* hero entrance: rise + fade without a clipping mask, so the glow is never cut off */
+.ng-rise-mask.ngn-rise { overflow: visible; vertical-align: baseline; padding: 0; margin: 0; }
+.ngn-rise > .ng-rise-word { animation-name: ngn-rise; }
+@keyframes ngn-rise { from { transform: translateY(0.5em); opacity: 0; } to { transform: none; opacity: 1; } }
+.ngn-light { transition: opacity 600ms var(--ease-out); }
+
+/* armed by NeonDirector: dark until the sign comes into view and ignites
+   (without JS, or with reduced motion, signs are simply lit) */
+.ng-neon-sign.is-armed:not(.is-lit):not(.is-igniting):not(.is-flicker) .ngn-light { opacity: 0; }
+.ng-neon-sign.is-igniting .ngn-light { animation: ngn-ignite 2.6s linear both; }
+.ng-neon-sign.is-flicker .ngn-light { animation: ngn-flicker 1.3s linear both; }
+
+/* the switch in the neon menu */
+:root[data-neon="off"] .ngn-light { opacity: 0 !important; animation: none !important; }
+
+@keyframes ngn-ignite {
+  0% { opacity: 0; }
+  5% { opacity: 1; }
+  8% { opacity: 0.05; }
+  13% { opacity: 0.95; }
+  15% { opacity: 0.12; }
+  21% { opacity: 1; }
+  23% { opacity: 0.35; }
+  27% { opacity: 1; }
+  44% { opacity: 0.95; }
+  46% { opacity: 0.55; }
+  48%, 100% { opacity: 1; }
+}
+@keyframes ngn-flicker {
+  0% { opacity: 1; }
+  6% { opacity: 0.08; }
+  10% { opacity: 1; }
+  26% { opacity: 0.95; }
+  30% { opacity: 0.12; }
+  33% { opacity: 0.9; }
+  37% { opacity: 0.3; }
+  44%, 100% { opacity: 1; }
+}
+
+/* ── Neon menu: glass button top right that expands ───── */
+.ngn-menu {
+  --nm-size: 44px;
+  position: fixed;
+  top: calc(84px + env(safe-area-inset-top, 0px));
+  right: calc(14px + env(safe-area-inset-right, 0px));
+  z-index: 38; /* below the nav (50) and the mobile menu (40) */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.ngn-menu-btn {
+  width: var(--nm-size); height: var(--nm-size);
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--ng-paper-rgb), 0.18);
+  background: linear-gradient(160deg, rgba(var(--ng-paper-rgb), 0.12), rgba(var(--ng-paper-rgb), 0.03)), rgba(16, 16, 16, 0.6);
+  box-shadow: inset 0 1px 0 rgba(var(--ng-paper-rgb), 0.28), 0 10px 26px -12px rgba(0, 0, 0, 0.9);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: var(--hl);
+  cursor: pointer;
+  transition: border-color var(--dur-fast), transform var(--dur) var(--ease-out);
+}
+.ngn-menu-btn svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; transition: filter var(--dur), color var(--dur); }
+.ngn-menu.is-on .ngn-menu-btn svg { filter: drop-shadow(0 0 2px rgba(var(--hl-rgb), 0.9)) drop-shadow(0 0 7px rgba(var(--hl-rgb), 0.6)); }
+.ngn-menu.is-off .ngn-menu-btn { color: var(--ng-muted); }
+.ngn-menu-btn:hover, .ngn-menu.is-open .ngn-menu-btn { border-color: rgba(var(--hl-rgb), 0.5); }
+
+.ngn-menu-panel {
+  margin-top: 8px;
+  width: 236px;
+  padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(var(--ng-paper-rgb), 0.16);
+  background: linear-gradient(160deg, rgba(var(--ng-paper-rgb), 0.1), rgba(var(--ng-paper-rgb), 0.02) 45%), rgba(14, 14, 14, 0.78);
+  box-shadow: inset 0 1px 0 rgba(var(--ng-paper-rgb), 0.24), 0 24px 50px -20px rgba(0, 0, 0, 0.95);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  transform-origin: top right;
+  opacity: 0; visibility: hidden; transform: translateY(-6px) scale(0.94);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur) var(--ease-out), visibility 0s linear var(--dur);
+}
+/* expands on hover, on keyboard focus, or when tapped open */
+.ngn-menu.is-open .ngn-menu-panel,
+.ngn-menu:has(:focus-visible) .ngn-menu-panel { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+@media (hover: hover) {
+  .ngn-menu:hover .ngn-menu-panel { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+}
+
+.ngn-menu-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ngn-menu-row--stack { flex-direction: column; align-items: stretch; gap: 8px; }
+.ngn-menu-label { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ng-muted); }
+
+.ngn-switch { display: inline-flex; align-items: center; gap: 10px; min-height: 36px; padding: 0; border: 0; background: none; color: var(--ng-fg); cursor: pointer; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+.ngn-switch-text { min-width: 2.4em; text-align: left; }
+.ngn-switch-track { position: relative; width: 44px; height: 24px; border-radius: 999px; background: rgba(var(--ng-paper-rgb), 0.12); border: 1px solid rgba(var(--ng-paper-rgb), 0.2); transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast); }
+.ngn-switch-knob { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--ng-muted); transition: transform var(--dur) var(--ease-out), background var(--dur-fast), box-shadow var(--dur-fast); }
+.ngn-switch[aria-checked="true"] .ngn-switch-track { background: rgba(var(--hl-rgb), 0.28); border-color: rgba(var(--hl-rgb), 0.7); box-shadow: 0 0 12px rgba(var(--hl-rgb), 0.45); }
+.ngn-switch[aria-checked="true"] .ngn-switch-knob { transform: translateX(20px); background: color-mix(in srgb, var(--hl) 40%, #fff); box-shadow: 0 0 8px rgba(var(--hl-rgb), 0.9); }
+.ngn-switch:focus-visible { outline: 2px solid var(--hl); outline-offset: 3px; border-radius: 6px; }
+
+.ngn-seg { display: grid; grid-template-columns: repeat(3, 1fr); padding: 3px; gap: 3px; border-radius: 10px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(var(--ng-paper-rgb), 0.1); }
+.ngn-seg-btn { min-height: 34px; border: 0; border-radius: 7px; background: transparent; color: var(--ng-muted); cursor: pointer; font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; transition: background var(--dur-fast), color var(--dur-fast); }
+.ngn-seg-btn:hover { color: var(--ng-fg); }
+.ngn-seg-btn[aria-checked="true"] { background: rgba(var(--ng-paper-rgb), 0.12); color: var(--ng-fg); box-shadow: inset 0 1px 0 rgba(var(--ng-paper-rgb), 0.18); }
+.ngn-seg-btn:focus-visible { outline: 2px solid var(--hl); outline-offset: 1px; }
+
+@media (max-width: 700px) {
+  .ngn-menu { --nm-size: 40px; top: calc(80px + env(safe-area-inset-top, 0px)); right: calc(12px + env(safe-area-inset-right, 0px)); }
+}
+
+/* the back-to-top sign powers down with the rest */
+:root[data-neon="off"] .ng-totop svg { filter: brightness(0.35); }
+:root[data-neon="off"] .ng-totop { animation: none; background: none; }
