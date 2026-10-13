@@ -1,0 +1,42 @@
+/* NeonBolt (NeonBolt.tsx). --nb-p scales every duration, --nb-d* are the start times. */
+.nb-root {
+  overflow: visible;
+  display: inline-block;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color-interpolation-filters: sRGB;
+  /* spray paint: the neon colour, darkened; the pale over-spray, lightened */
+  --nb-paint: color-mix(in srgb, currentColor 70%, #1c0003);
+  --nb-pale: color-mix(in srgb, currentColor 60%, #ffffff);
+}
+.nb-paint { fill: var(--nb-paint); stroke: var(--nb-paint); }
+.nb-drip.nb-paint { fill: none; }
+.nb-pale { stroke: var(--nb-pale); }
+.nb-root:not(.nb-on) * { animation-play-state: paused !important; }
+
+.nb-rv { stroke-dasharray: 1 1; animation: nb-draw calc(0.9s * var(--nb-p, 1)) cubic-bezier(0.45, 0.1, 0.6, 1) var(--nb-d0) both; }
+.nb-drip { stroke-dasharray: 1 1; animation: nb-draw calc(1.1s * var(--nb-p, 1)) cubic-bezier(0.55, 0, 0.85, 0.55) both; }
+.nb-trace {
+  stroke-dasharray: 1 1;
+  animation:
+    nb-draw calc(0.75s * var(--nb-p, 1)) linear var(--nb-d1) both,
+    nb-out calc(0.35s * var(--nb-p, 1)) ease-out var(--nb-d3) forwards;
+}
+.nb-ignite { animation: nb-ignite calc(0.75s * var(--nb-p, 1)) linear var(--nb-d2) both; }
+.nb-buzz { animation: nb-buzz 7s linear var(--nb-d4) infinite; }
+.nb-flash { opacity: 0; animation: nb-flash calc(0.9s * var(--nb-p, 1)) ease-out var(--nb-d2) both; }
+
+@keyframes nb-draw { from { stroke-dashoffset: 1.05; } to { stroke-dashoffset: 0; } }
+@keyframes nb-out { to { opacity: 0; } }
+@keyframes nb-ignite { 0% { opacity: 0; } 8% { opacity: 1; } 22% { opacity: 0.2; } 38% { opacity: 0.95; } 50% { opacity: 0.4; } 72% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes nb-buzz { 0%, 61% { opacity: 1; } 62% { opacity: 0.35; } 63% { opacity: 1; } 64% { opacity: 0.6; } 65.5% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes nb-flash { 0% { opacity: 0; } 10% { opacity: 1; } 100% { opacity: 0; } }
+
+/* the neon power switch in the site menu: glass and paint stay, the light goes */
+:root[data-neon="off"] .nb-root :is(.nb-ignite, .nb-trace, .nb-flash) { opacity: 0 !important; animation: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nb-root * { animation: none !important; }
+  .nb-trace, .nb-flash { opacity: 0; }
+}

@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { CURTAIN_STYLES, NEON_COLOURS, NEON_DEFAULTS, NEON_FONTS, useNeon, type NeonSettings } from "./NeonProvider";
+import { CURTAIN_STYLES, LOGO_STYLES, NEON_COLOURS, NEON_DEFAULTS, NEON_FONTS, useNeon, type NeonSettings } from "./NeonProvider";
 
 /**
  * Neon menu: a glass power button in the top-right corner that expands on
@@ -13,7 +13,7 @@ import { CURTAIN_STYLES, NEON_COLOURS, NEON_DEFAULTS, NEON_FONTS, useNeon, type 
  * glass reflections and tube thickness.
  */
 
-type SliderKey = Exclude<keyof NeonSettings, "on" | "font" | "colour" | "piano" | "curtain">;
+type SliderKey = Exclude<keyof NeonSettings, "on" | "font" | "colour" | "piano" | "curtain" | "logo">;
 
 const SLIDERS: { key: SliderKey; label: string; min: number; max: number; step: number; unit?: string }[] = [
   { key: "intensity", label: "Brightness", min: 0, max: 2, step: 0.05 },
@@ -88,6 +88,17 @@ export function NeonMenu() {
       </button>
 
       <div id="ngn-menu-panel" className="ngn-menu-panel" role="group" aria-label="Site controls">
+        <fieldset className="ngn-ctl">
+          <legend className="ngn-menu-title">Logo</legend>
+          <div className="ngn-seg ngn-seg--2" role="radiogroup" aria-label="Logo">
+            {LOGO_STYLES.map((l) => (
+              <button key={l.value} type="button" role="radio" aria-checked={neon.logo === l.value} className="ngn-seg-btn" onClick={() => neon.set("logo", l.value)}>
+                {l.label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
         <div className="ngn-menu-row ngn-menu-row--piano">
           <label htmlFor="ngn-piano" className="ngn-menu-title">
             Piano Scroll

@@ -28,6 +28,12 @@ export const NEON_COLOURS = [
   { value: "violet", label: "Violet", hex: "#b26bff" },
 ] as const;
 
+export const LOGO_STYLES = [
+  { value: "bolt", label: "Bolt" },
+  { value: "classic", label: "Classic" },
+] as const;
+export type LogoStyle = (typeof LOGO_STYLES)[number]["value"];
+
 export const CURTAIN_STYLES = [
   { value: "classic", label: "Classic" },
   { value: "velvet", label: "Velvet" },
@@ -35,6 +41,8 @@ export const CURTAIN_STYLES = [
 export type CurtainStyle = (typeof CURTAIN_STYLES)[number]["value"];
 
 export type NeonSettings = {
+  /** the brand: the neon "NextGen Voices" sign with the lightning bolt, or the original NG interlock */
+  logo: LogoStyle;
   on: boolean;
   font: NeonFont;
   /** a NEON_COLOURS value, or a custom "#rrggbb" */
@@ -56,6 +64,7 @@ export type NeonSettings = {
 };
 
 export const NEON_DEFAULTS: NeonSettings = {
+  logo: "bolt",
   on: true,
   font: "script",
   colour: "red",
@@ -98,6 +107,7 @@ function sanitize(saved: Partial<NeonSettings>): NeonSettings {
   const num = (v: unknown, lo: number, hi: number, d: number) => (typeof v === "number" && Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : d);
   const d = NEON_DEFAULTS;
   return {
+    logo: LOGO_STYLES.some((l) => l.value === saved.logo) ? (saved.logo as LogoStyle) : d.logo,
     on: typeof saved.on === "boolean" ? saved.on : d.on,
     font: NEON_FONTS.some((f) => f.value === saved.font) ? (saved.font as NeonFont) : d.font,
     colour: typeof saved.colour === "string" && (/^#[0-9a-f]{6}$/i.test(saved.colour) || NEON_COLOURS.some((c) => c.value === saved.colour)) ? saved.colour : d.colour,
@@ -127,7 +137,10 @@ export function NeonProvider({ children }: { children: ReactNode }) {
 
   // signs are drawn in the saved lettering now: let them show
   useEffect(() => {
-    if (restored) delete document.documentElement.dataset.neonPending;
+    if (restored) {
+      delete document.documentElement.dataset.neonPending;
+      delete document.documentElement.dataset.brandPending;
+    }
   }, [restored]);
 
   useEffect(() => {
@@ -143,7 +156,7 @@ export function NeonProvider({ children }: { children: ReactNode }) {
   }, []);
   const reset = useCallback(() => {
     setSettings((s) => {
-      const next = { ...NEON_DEFAULTS, on: s.on, piano: s.piano, curtain: s.curtain };
+      const next = { ...NEON_DEFAULTS, on: s.on, piano: s.piano, curtain: s.curtain, logo: s.logo };
       save(next);
       return next;
     });

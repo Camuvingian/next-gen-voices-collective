@@ -268,3 +268,27 @@
 :root main:focus { outline: none; }
 @media (max-width: 700px) { :root .ng-totop { width: 54px; height: 54px; } :root .ng-totop svg { width: 42px; height: 42px; } }
 @media (prefers-reduced-motion: reduce) { :root .ng-totop { transform: none; } :root .ng-totop svg { transition: none; } }
+
+/* ── Bolt logo (Logo: "Bolt" in the site menu) ─────────────────── */
+/* the hero: a "NextGen Voices" neon sign with the bolt standing at the end of the line */
+.ng-hero-sign { margin: 4px 0 22px; font-size: clamp(64px, 1.6rem + 7.4vw, 150px); line-height: 1.1; font-weight: 400; }
+.ng-hero-sign-end { white-space: nowrap; }
+/* the bolt rises from just under the cap line and dips below the baseline; its paint drips run further */
+.ng-hero-bolt { width: 1.06em; height: 1.95em; vertical-align: -0.97em; margin-left: 0.04em; }
+.ng-hero-tagline { margin: 0 0 26px; font-family: var(--font-display); text-transform: uppercase; font-size: clamp(26px, 0.8rem + 2.4vw, 52px); line-height: 1.05; letter-spacing: 0.05em; animation: ng-up 1s 450ms var(--ease-out) both; }
+.ng-hero--bolt .ng-hero-lede { animation-delay: 650ms; }
+/* phones: the sign stacks, NextGen over Voices ⚡, the second line set in like a hand-bent sign */
+@media (max-width: 560px) {
+  .ng-hero-sign { font-size: clamp(56px, 19vw, 84px); line-height: 1; margin-bottom: 30px; }
+  .ng-hero-sign-end { display: block; padding-left: 0.85em; }
+  .ng-hero-tagline .nm-shimmer { display: block; width: fit-content; }
+}
+/* with the burger menu, the settings button sits below it: start the hero copy clear of it */
+@media (max-width: 860px) { .ng-hero { padding-top: 128px; } }
+
+/* the mark in the nav and footer lockups, and on the curtains */
+.ng-brand-bolt { flex-shrink: 0; }
+.ng-lockup .ng-brand-bolt { margin-right: -2px; }
+
+/* a saved logo that isn't the default: hold the brand until React has drawn it (see neonBoot.ts) */
+:root[data-brand-pending] :is(.ng-hero-inner, .ng-lockup, .ng-curtain-panel > *, .nm-curtain-mark) { visibility: hidden; }

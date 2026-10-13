@@ -11,6 +11,7 @@
 @import "../components/neon/neon.css";
 @import "../components/piano-rail/NextGenPianoRail.css";
 @import "../components/brand/NextGenLogo.css";
+@import "../components/brand/NeonBolt.css";
 
 /* Noir Club is dark-only; the dark variant is always on. */
 @custom-variant dark (&:is(:root *));

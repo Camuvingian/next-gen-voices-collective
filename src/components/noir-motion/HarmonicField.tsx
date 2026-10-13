@@ -185,6 +185,20 @@ export function HarmonicField({
       opts,
     );
     document.documentElement.addEventListener("mouseleave", centre, opts);
+    // site addition: the hero's lightning bolt strikes the waves where it stands
+    window.addEventListener(
+      "ng:strike",
+      (e) => {
+        const { x } = (e as CustomEvent<{ x: number; y: number }>).detail,
+          r = host.getBoundingClientRect(),
+          s = state.current;
+        if (x < r.left || x > r.right) return;
+        s.rx = (x - r.left) / r.width;
+        s.ripple = 0;
+        s.energy = Math.min(1.4, s.energy + 0.9);
+      },
+      opts,
+    );
     return () => ac.abort();
   }, [live]);
   return (

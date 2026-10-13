@@ -15,6 +15,8 @@ import { watchNeonSigns } from "@/components/neon/neonRegistry";
  */
 
 const STATES = ["is-armed", "is-igniting", "is-flicker", "is-lit"];
+/** hero signs: the classic "One sound." and the bolt hero's "NextGen Voices" */
+const HERO = ".ng-hero-line, .ng-hero-sign";
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
 export function NeonDirector() {
@@ -47,7 +49,7 @@ export function NeonDirector() {
             visible.add(e.target);
             if (!lit.has(e.target)) {
               lit.add(e.target);
-              const hero = !!e.target.closest(".ng-hero-line");
+              const hero = !!e.target.closest(HERO);
               // the hero sign waits for the headline to finish rising
               timers.push(window.setTimeout(() => flash(e.target, "is-igniting", 2600), hero ? 900 : rand(150, 500)));
             }
@@ -78,7 +80,7 @@ export function NeonDirector() {
       const tick = () => {
         const pool = Array.from(visible).filter((el) => !el.classList.contains("is-igniting"));
         if (pool.length) {
-          const hero = pool.find((el) => el.closest(".ng-hero-line"));
+          const hero = pool.find((el) => el.closest(HERO));
           const el = hero && Math.random() < 0.65 ? hero : pool[Math.floor(Math.random() * pool.length)];
           flash(el, "is-flicker", 1300);
         }

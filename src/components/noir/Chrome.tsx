@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Link, ROUTES, ROUTE_LABELS, useRouter } from "@/lib/router";
 import { SITE } from "@/lib/content";
-import { Logo, LogoMark } from "@/components/brand/Logo";
+import { BrandMark, Logo } from "@/components/brand/Logo";
 import { ButtonLink } from "@/components/noir/primitives";
 import { SiteWaves } from "./SiteWaves";
 import { NeonSign } from "@/components/neon/NeonSign";
@@ -92,7 +92,7 @@ export function Curtain() {
         <div className="nm-curtain-panel nm-curtain-left" />
         <div className="nm-curtain-panel nm-curtain-right" />
         <div className="nm-curtain-mark">
-          <LogoMark size={108} draw={take > 0} duration={1.7} replayKey={take} decorative style={{ "--ng-surface": "#0d0b0d" }} />
+          <BrandMark size={108} draw={take > 0} duration={1.7} pace={0.45} replayKey={take} decorative style={{ "--ng-surface": "#0d0b0d" }} />
           <Shimmer key={take} className="nm-curtain-word" interval={2.4} delay={0.3}>
             NEXTGEN
           </Shimmer>
@@ -103,7 +103,7 @@ export function Curtain() {
   return (
     <div className={`ng-curtain is-${phase}`} aria-hidden="true">
       <div className="ng-curtain-panel">
-        <LogoMark size={150} draw={take > 0} duration={2.4} replayKey={take} decorative />
+        <BrandMark size={150} draw={take > 0} duration={2.4} pace={0.45} replayKey={take} decorative />
       </div>
     </div>
   );

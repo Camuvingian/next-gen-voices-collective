@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { SiteWaves } from "@/components/noir/SiteWaves";
 import { MediaSlot } from "@/components/noir/MediaSlot";
 import { SiteMarquee, SitePillarCard } from "@/components/noir/SiteMotion";
 import { Lightbox } from "@/components/noir/Lightbox";
 import { InstagramGlyph } from "@/components/noir/Chrome";
-import { LogoMark } from "@/components/brand/Logo";
-import { Arrow, ButtonLink, Eyebrow, Reveal, RiseText } from "@/components/noir/primitives";
+import { Arrow, ButtonLink, Eyebrow, Reveal } from "@/components/noir/primitives";
 import { GALLERY, PILLARS, SITE, STEPS } from "@/lib/content";
 import { Link } from "@/lib/router";
 import { PHOTOS } from "@/lib/media";
 import { NeonSign } from "@/components/neon/NeonSign";
+import { HomeHero } from "./HomeHero";
 
 const SHOWREEL = [{ id: "reel", kind: "stage" as const, cat: "Performances" as const, title: "NextGen showreel", ratio: "16 / 9", seed: 13, video: true, photo: PHOTOS.rehearsalSinging }];
 
@@ -20,55 +19,7 @@ export function Home() {
 
   return (
     <>
-      {/* ── Hero ───────────────────────────────── */}
-      <section className="ng-hero">
-        <SiteWaves className="ng-hero-field" />
-        <div className="ng-hero-vignette" aria-hidden="true" />
-        <div className="ng-wrap ng-hero-inner">
-          <div className="ng-hero-mark">
-            <LogoMark size="100%" draw delay={0.15} />
-          </div>
-          <Eyebrow className="ng-hero-eyebrow">
-            Audition-based vocal collective <span className="ng-dot" /> Ages {SITE.ages} <span className="ng-dot" /> London
-          </Eyebrow>
-          <h1 className="ng-hero-title">
-            <span className="ng-hero-kicker">NextGen</span>
-            <span className="ng-hero-line">
-              <RiseText text="Young voices." delay={250} />
-            </span>
-            <span className="ng-hero-line ng-italic">
-              <NeonSign rise={450} glow={1.25}>One sound.</NeonSign>
-            </span>
-          </h1>
-          <p className="ng-hero-lede">
-            An elite ensemble for outstanding singers who are ready to be challenged, rehearsing every week at a standard most adult groups aim for.
-          </p>
-          <div className="ng-btn-row ng-hero-ctas">
-            <ButtonLink to="auditions" anchor="apply" size="lg">
-              Apply to audition
-            </ButtonLink>
-            <ButtonLink to="contact" variant="outline" size="lg">
-              Book us to perform
-            </ButtonLink>
-          </div>
-        </div>
-        <dl className="ng-wrap ng-hero-facts">
-          <div>
-            <dt>Ages</dt>
-            <dd>{SITE.ages}</dd>
-          </div>
-          <div>
-            <dt>Rehearsals</dt>
-            <dd>
-              {SITE.rehearsal.day} {SITE.rehearsal.time}
-            </dd>
-          </div>
-          <div>
-            <dt>Entry</dt>
-            <dd>By audition</dd>
-          </div>
-        </dl>
-      </section>
+      <HomeHero />
 
       {/* ── Statement ───────────────────────────── */}
       <section className="ng-section ng-wrap ng-statement">
