@@ -60,8 +60,9 @@
 .ngn-menu {
   --nm-size: 44px;
   --nm-edge: 14px;
+  --nm-top: calc(var(--nm-edge) + env(safe-area-inset-top, 0px));
   position: fixed;
-  top: calc(var(--nm-edge) + env(safe-area-inset-top, 0px));
+  top: var(--nm-top);
   right: calc(var(--nm-edge) + env(safe-area-inset-right, 0px));
   z-index: 55; /* above the nav (50) and the mobile menu (40) */
   display: flex;
@@ -123,7 +124,7 @@
   position: relative;
   margin-top: 10px;
   width: min(300px, calc(100vw - 2 * var(--nm-edge)));
-  max-height: calc(100dvh - var(--nm-size) - var(--nm-edge) * 2 - 10px - env(safe-area-inset-top, 0px));
+  max-height: calc(100dvh - var(--nm-top) - var(--nm-size) - var(--nm-edge) - 10px);
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 16px 18px 14px;
@@ -198,9 +199,18 @@
 .ngn-slider [data-slot="slider-thumb"] { width: 16px; height: 16px; border: 1px solid rgba(var(--hl-rgb), 0.9); background: color-mix(in srgb, var(--hl) 25%, #fff); box-shadow: 0 0 10px rgba(var(--hl-rgb), 0.7); cursor: grab; }
 .ngn-slider [data-slot="slider-thumb"]:focus-visible { outline: 2px solid var(--ng-fg); outline-offset: 3px; }
 
-@media (max-width: 700px) {
-  .ngn-menu { --nm-size: 40px; --nm-edge: 12px; }
-  .ng-nav-inner { --nm-reserve: 48px; }
+/* with the burger menu (mobile and tablet), the button sits just below the burger, centred under it */
+@media (max-width: 860px) {
+  .ngn-menu {
+    --nm-size: 40px;
+    --nm-edge: 12px;
+    --nm-top: calc(env(safe-area-inset-top, 0px) + 70px); /* nav: 14px padding + 44px burger, then a 12px gap */
+    right: calc(var(--gutter) + 2px + env(safe-area-inset-right, 0px));
+    transition: opacity var(--dur-fast) var(--ease-out), visibility 0s linear var(--dur-fast);
+  }
+  .ng-nav-inner { padding-right: var(--gutter); }
+  /* out of the way while the full-screen menu is open */
+  :root:has(.ng-menu.is-open) .ngn-menu { opacity: 0; visibility: hidden; }
 }
 
 /* the back-to-top sign powers down with the rest */
