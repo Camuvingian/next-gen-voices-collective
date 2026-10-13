@@ -7,6 +7,14 @@ export interface HarmonicFieldProps {
   interactive?: boolean;
   className?: string;
 }
+/** A piano note ringing in the field (site addition, see the ng:note listener). */
+type Note = { midi: number; f: number; k: number; rx: number; age: number; amp: number; held: boolean };
+/** speed the note ripples travel at, in field widths per second */
+const NOTE_SPEED = 0.4;
+/** the on-screen rate of middle C. Real pitches are far beyond a 60 Hz screen, so
+ *  every note is scaled by the same factor: intervals keep their true ratios. */
+const C4_HZ = 0.9;
+
 /** Four perspective ribbons. Canvas2D deliberately avoids a WebGL/runtime dependency. */
 export function HarmonicField({
   density = 12,
@@ -30,6 +38,8 @@ export function HarmonicField({
     rx: 0.5,
     a: "#de182c",
     b: "#800a18",
+    notes: [] as Note[],
+    res: new Float32Array(0),
   });
   const redraw = useRef(() => {});
   useEffect(() => {
@@ -78,12 +88,38 @@ export function HarmonicField({
     s.y += (s.ty - s.y) * smooth;
     s.energy *= Math.exp(-dt * 1.5);
     s.ripple += dt;
+    // piano notes: a held note rings on (low notes longer, like the strings);
+    // letting go drops the damper
+    s.notes = s.notes.filter((n) => {
+      n.age += dt;
+      n.amp *= Math.exp(-dt / (n.held ? 2.6 * Math.pow(2, -(n.midi - 60) / 24) : 0.25));
+      return n.amp > 0.01;
+    });
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
     const lines = clamp(Math.floor(density), 3, w < 600 ? 9 : 20),
       steps = w < 600 ? 110 : 190;
     const chord = 0.5 - 0.5 * Math.cos((t * Math.PI) / 20);
     const ratios = [1, 1.25 - 0.05 * chord, 1.5, 2];
+    // the notes' sound waves depend only on u, so they're summed once per frame:
+    // each spreads from its own place on the stage, its wavelength and rate
+    // following its pitch, so chords interfere like the real thing
+    if (s.res.length !== steps + 1) s.res = new Float32Array(steps + 1);
+    const res = s.res,
+      sounding = s.notes.length > 0;
+    if (sounding) {
+      res.fill(0);
+      for (const n of s.notes) {
+        const reach = NOTE_SPEED * n.age,
+          a = n.amp * Math.min(1, n.age * 14),
+          phase = 2 * Math.PI * n.f * n.age;
+        for (let i = 0; i <= steps; i++) {
+          const d = Math.abs(i / steps - n.rx),
+            front = clamp((reach - d) * 14, 0, 1);
+          if (front > 0) res[i] += a * front * Math.exp(-d * 1.4) * Math.sin(n.k * d - phase);
+        }
+      }
+    }
     ctx.globalCompositeOperation = "lighter";
     for (let voice = 3; voice >= 0; voice--) {
       for (let j = 0; j < lines; j++) {
@@ -117,7 +153,7 @@ export function HarmonicField({
             (voice - 1.5) * h * 0.034 +
             z * h * 0.17 +
             env *
-              (wave + pulse) *
+              (wave + pulse + (sounding ? res[i] : 0)) *
               h *
               0.16 *
               clamp(intensity, 0, 2) *
@@ -196,6 +232,36 @@ export function HarmonicField({
         s.rx = (x - r.left) / r.width;
         s.ripple = 0;
         s.energy = Math.min(1.4, s.energy + 0.9);
+      },
+      opts,
+    );
+    // site addition: the piano rail's keys ring through the waves (pianoEngine.ts)
+    window.addEventListener(
+      "ng:note",
+      (e) => {
+        const { midi, velocity = 0.6 } = (e as CustomEvent<{ midi: number; velocity?: number }>).detail,
+          s = state.current,
+          f = Math.min(12, C4_HZ * Math.pow(2, (midi - 60) / 12));
+        s.notes.push({
+          midi,
+          f,
+          k: (2 * Math.PI * f) / NOTE_SPEED,
+          // laid across the stage like a keyboard: low notes left, high right
+          rx: clamp(0.1 + ((midi - 48) / 48) * 0.8, 0.08, 0.92),
+          age: 0,
+          amp: 0.25 + velocity * 0.55,
+          held: true,
+        });
+        if (s.notes.length > 8) s.notes.shift();
+        s.energy = Math.min(1.4, s.energy + 0.15 * velocity);
+      },
+      opts,
+    );
+    window.addEventListener(
+      "ng:note-off",
+      (e) => {
+        const { midi } = (e as CustomEvent<{ midi: number }>).detail;
+        for (const n of state.current.notes) if (n.midi === midi) n.held = false;
       },
       opts,
     );

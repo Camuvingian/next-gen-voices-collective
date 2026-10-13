@@ -99,6 +99,7 @@ export async function noteOn(midi: number, velocity = 0.8) {
   gain.gain.setValueAtTime(v * v, t); // perceptual velocity curve
   src.connect(gain).connect(master);
   src.start(t);
+  announce("ng:note", { midi, velocity: v });
   const voice = { src, gain };
   const list = voices.get(midi) ?? [];
   list.push(voice);
@@ -125,6 +126,12 @@ export function noteOff(midi: number) {
     }
   }
   voices.set(midi, []);
+  announce("ng:note-off", { midi });
+}
+
+/** tells the page a note sounded or was let go (the hero waves resonate with it) */
+function announce(type: "ng:note" | "ng:note-off", detail: { midi: number; velocity?: number }) {
+  window.dispatchEvent(new CustomEvent(type, { detail }));
 }
 
 /** Play a note for a fixed time (used when scrolling plays the keys). */
