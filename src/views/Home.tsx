@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { SiteWaves } from "@/components/noir/SiteWaves";
 import { MediaSlot } from "@/components/noir/MediaSlot";
-import { PillarCard } from "@/components/noir/PillarCard";
+import { SiteMarquee, SitePillarCard } from "@/components/noir/SiteMotion";
 import { Lightbox } from "@/components/noir/Lightbox";
 import { InstagramGlyph } from "@/components/noir/Chrome";
 import { LogoMark } from "@/components/brand/Logo";
-import { Arrow, ButtonLink, Eyebrow, Marquee, Reveal, RiseText } from "@/components/noir/primitives";
+import { Arrow, ButtonLink, Eyebrow, Reveal, RiseText } from "@/components/noir/primitives";
 import { GALLERY, PILLARS, SITE, STEPS } from "@/lib/content";
 import { Link } from "@/lib/router";
 import { PHOTOS } from "@/lib/media";
@@ -122,7 +122,7 @@ export function Home() {
         <div className="ng-pillars">
           {PILLARS.map((p, i) => (
             <Reveal as="article" key={p.key} className="ng-pillar" delay={i * 90}>
-              <PillarCard kind={p.key} />
+              <SitePillarCard kind={p.key} />
               <h3>{p.title}</h3>
               <p>{p.body}</p>
             </Reveal>
@@ -130,7 +130,7 @@ export function Home() {
         </div>
       </section>
 
-      <Marquee items={["Blend", "Harmony", "Precision", "Presence", "Ages 13–18", "By audition"]} />
+      <SiteMarquee items={["Blend", "Harmony", "Precision", "Presence", "Ages 13–18", "By audition"]} />
 
       {/* ── Mosaic ──────────────────────────────── */}
       <section className="ng-section ng-wrap ng-mosaic">

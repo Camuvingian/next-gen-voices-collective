@@ -37,15 +37,30 @@ const reduceMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)
 /**
  * Wraps the App Router with the prototype's stage-curtain transition:
  * the curtain covers the page, the route changes underneath, then it lifts.
+ *
+ * router.push() returns nothing to await, so the lift waits for the new
+ * pathname to commit (this provider's effects run after the new page's), with
+ * a time limit so a slow or failed navigation can never leave the curtain down.
  */
+const COVER_MS = 820;
+const LIFT_MS = 830;
+const MOUNT_TIMEOUT_MS = 4000;
+
 export function RouterProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useNextRouter();
   const route = routeFromPath(pathname);
   const [phase, setPhase] = useState<Phase>("idle");
   const timers = useRef<number[]>([]);
+  const arrival = useRef<{ path: string; lift: () => void } | null>(null);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  // the destination page has mounted: lift the curtain
+  useEffect(() => {
+    const a = arrival.current;
+    if (a && a.path === pathname) a.lift();
+  }, [pathname]);
 
   const navigate = useCallback(
     (to: Route, opts?: { anchor?: string }) => {
@@ -55,16 +70,31 @@ export function RouterProvider({ children }: { children: ReactNode }) {
         return;
       }
       const href = hrefFor(to, opts?.anchor);
+      const path = hrefFor(to);
       timers.current.forEach(clearTimeout);
+      arrival.current = null;
       if (reduceMotion()) return router.push(href);
       router.prefetch(href);
       setPhase("cover");
+      const lift = () => {
+        if (arrival.current?.lift !== lift) return; // superseded by a newer click
+        arrival.current = null;
+        timers.current.forEach(clearTimeout);
+        setPhase("reveal");
+        timers.current = [
+          window.setTimeout(() => {
+            setPhase("idle");
+            // hand focus to the new page, as a full page load would
+            document.getElementById("main")?.focus({ preventScroll: true });
+          }, LIFT_MS),
+        ];
+      };
       timers.current = [
         window.setTimeout(() => {
+          arrival.current = { path, lift };
+          timers.current.push(window.setTimeout(lift, MOUNT_TIMEOUT_MS));
           router.push(href);
-          setPhase("reveal");
-        }, 820),
-        window.setTimeout(() => setPhase("idle"), 1650),
+        }, COVER_MS),
       ];
     },
     [route, router],

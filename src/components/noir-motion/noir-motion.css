@@ -1,0 +1,338 @@
+/*
+ * NextGen Noir motion (from media/nextgen-noir-motion.zip, src/noir/noir.css).
+ * Only the rules for the pieces the site uses: the Canvas waves, the musical
+ * scene cards, the ticker, the shimmer and the velvet curtain.
+ *
+ * Differences from the package:
+ *  - The package scopes its tokens and pause/reduced-motion rules to a
+ *    .nm-root wrapper (NoirMotionProvider). The site has no global pause, so
+ *    the tokens live on :root and those rules key off each component's own
+ *    data-run / data-reduced instead. The site's palette (--hl, --ng-*) comes
+ *    from src/styles/tokens.css; the package's tokens.css isn't used.
+ *  - Imported before src/styles/styles.css, so the site's placement classes
+ *    (.ng-hero-field, .ng-footer-field) win over .nm-field's defaults.
+ */
+
+:root {
+  --nm-white: #fff;
+  --nm-black: #000;
+  --nm-silver: #b6b2aa;
+  --nm-metal-dark: #41413e;
+  --nm-panel: #111212;
+  --nm-ivory: #eee8dc;
+  --nm-line: rgba(238, 232, 220, 0.17);
+  --nm-muted: var(--ng-muted, #aaa59c);
+  --nm-ink: var(--ng-fg, #f1efea);
+  --nm-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nm-sr {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Waves ─────────────────────────────────────────────── */
+.nm-field {
+  position: relative;
+  isolation: isolate;
+  min-height: 240px;
+  width: 100%;
+  overflow: hidden;
+}
+.nm-field canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+.nm-field-haze {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 52%, rgba(var(--ng-glow), 0.07), transparent 64%);
+}
+
+/* ── Shimmer ───────────────────────────────────────────── */
+.nm-shimmer {
+  position: relative;
+  display: inline-block;
+  color: var(--nm-ink);
+}
+.nm-shimmer-light {
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  background: linear-gradient(105deg, transparent 41%, rgba(255, 255, 255, 0.12) 46%, var(--nm-white) 49.5%, rgba(255, 255, 255, 0.4) 50.5%, transparent 57%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-size: 320% 100%;
+  animation: nm-sheen var(--nm-cycle, 8s) var(--nm-delay, 1.5s) linear infinite;
+  pointer-events: none;
+}
+.nm-shimmer[data-reduced="true"] .nm-shimmer-light {
+  display: none;
+}
+@keyframes nm-sheen {
+  0% {
+    background-position: 100% 50%;
+    opacity: 1;
+  }
+  18% {
+    background-position: 0% 50%;
+    opacity: 1;
+  }
+  19%,
+  100% {
+    background-position: 0% 50%;
+    opacity: 0;
+  }
+}
+
+/* ── Musical scene cards ───────────────────────────────── */
+.nm-pillar {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 34%, rgba(238, 232, 220, 0.048), transparent 70%),
+    linear-gradient(135deg, var(--nm-panel), var(--ng-bg));
+  border: 1px solid var(--nm-line);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.03);
+}
+.nm-pillar:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(125deg, transparent 10%, rgba(255, 255, 255, 0.035) 39%, transparent 40%);
+}
+.nm-pillar svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.nm-engrave {
+  stroke: var(--nm-silver);
+  stroke-width: 0.65;
+  fill: none;
+  opacity: 0.6;
+}
+.nm-staff {
+  fill: none;
+  stroke: var(--nm-silver);
+  stroke-width: 0.6;
+  opacity: 0.22;
+}
+.nm-guides {
+  stroke: var(--hl);
+  opacity: 0.19;
+  stroke-width: 0.8;
+  fill: none;
+}
+.nm-svg-label {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  letter-spacing: 2px;
+  fill: var(--nm-muted);
+  stroke: none;
+}
+.nm-scene-caption {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  letter-spacing: 2.3px;
+  fill: var(--nm-muted);
+  text-anchor: middle;
+}
+.nm-clef {
+  fill: var(--nm-silver);
+  font-size: 74px;
+  stroke: none;
+}
+.nm-note {
+  fill: var(--nm-ivory);
+  stroke: var(--nm-ivory);
+  stroke-width: 1.6;
+}
+.nm-accent {
+  fill: var(--hl);
+  stroke: var(--hl);
+  filter: drop-shadow(0 0 5px rgba(var(--hl-rgb), 0.6));
+}
+.nm-accent .nm-note {
+  fill: var(--hl);
+  stroke: var(--hl);
+}
+.nm-ring {
+  fill: none;
+  stroke: var(--hl);
+  stroke-width: 1;
+}
+.nm-voice-lead {
+  fill: none;
+  stroke: var(--hl);
+  stroke-width: 0.8;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0.42;
+}
+.nm-metronome-body {
+  fill: var(--nm-panel);
+  stroke: var(--nm-silver);
+  stroke-width: 1.2;
+}
+.nm-beat {
+  fill: var(--hl);
+  filter: drop-shadow(0 0 4px var(--hl));
+}
+.nm-tempo {
+  fill: var(--nm-silver);
+  font-size: 25px;
+  font-family: var(--font-display);
+}
+
+/* ── Ticker ────────────────────────────────────────────── */
+.nm-marquee {
+  overflow: hidden;
+  border-block: 1px solid var(--nm-line);
+  padding: 27px 0;
+  user-select: none;
+}
+.nm-marquee-track,
+.nm-marquee-group,
+.nm-marquee-unit {
+  display: flex;
+  width: max-content;
+}
+.nm-marquee-track {
+  animation: nm-marquee var(--nm-cycle, 38s) linear infinite;
+}
+.nm-marquee-item {
+  display: flex;
+  align-items: center;
+  gap: 44px;
+  padding-right: 44px;
+  white-space: nowrap;
+  font: 32px var(--font-display);
+  color: var(--nm-ink);
+}
+.nm-marquee-item:nth-child(2n) {
+  color: transparent;
+  -webkit-text-stroke: 0.6px var(--nm-silver);
+}
+.nm-marquee-item:nth-child(3n) {
+  font-family: var(--font-script);
+  color: var(--hl);
+  -webkit-text-stroke: 0;
+}
+.nm-marquee-item i {
+  font: 14px var(--font-sans);
+  font-style: normal;
+  color: var(--nm-silver);
+}
+.nm-marquee[data-hover="true"]:hover .nm-marquee-track {
+  animation-play-state: paused;
+}
+@keyframes nm-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ── Velvet curtain (page transition, "Velvet" in the site menu) ── */
+.nm-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  visibility: hidden;
+}
+.nm-curtain[data-phase="cover"],
+.nm-curtain[data-phase="reveal"] {
+  visibility: visible;
+}
+.nm-curtain-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.2%;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0, rgba(0, 0, 0, 0.5) 8%, rgba(255, 255, 255, 0.035) 13%, transparent 18%),
+    linear-gradient(90deg, #090809, #191619, #080708);
+  box-shadow: 0 0 40px #000;
+}
+.nm-curtain-left {
+  left: 0;
+  transform: translateX(-101%);
+}
+.nm-curtain-right {
+  right: 0;
+  transform: translateX(101%);
+}
+.nm-curtain[data-phase="cover"] .nm-curtain-panel {
+  transform: translateX(0);
+  transition: transform 0.54s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.nm-curtain[data-phase="reveal"] .nm-curtain-panel {
+  transition: transform 0.68s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.nm-curtain-mark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+}
+.nm-curtain-mark > span:last-child {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  color: var(--nm-silver);
+}
+.nm-curtain-word {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 0.32em;
+  margin-top: 6px;
+}
+.nm-curtain[data-phase="cover"] .nm-curtain-mark {
+  opacity: 1;
+  transition: opacity 0.3s 0.22s;
+}
+.nm-curtain[data-phase="reveal"] .nm-curtain-mark {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+/* ── Pausing and reduced motion (per component, no .nm-root) ── */
+:is(.nm-marquee, .nm-shimmer)[data-run="false"] * {
+  animation-play-state: paused !important;
+}
+:is(.nm-marquee, .nm-shimmer)[data-reduced="true"] * {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nm-marquee *,
+  .nm-shimmer *,
+  .nm-curtain * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .nm-shimmer-light {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .nm-marquee-item {
+    font-size: 26px;
+  }
+}

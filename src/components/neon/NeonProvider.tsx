@@ -28,6 +28,12 @@ export const NEON_COLOURS = [
   { value: "violet", label: "Violet", hex: "#b26bff" },
 ] as const;
 
+export const CURTAIN_STYLES = [
+  { value: "classic", label: "Classic" },
+  { value: "velvet", label: "Velvet" },
+] as const;
+export type CurtainStyle = (typeof CURTAIN_STYLES)[number]["value"];
+
 export type NeonSettings = {
   on: boolean;
   font: NeonFont;
@@ -45,6 +51,8 @@ export type NeonSettings = {
   thickness: number;
   /** Piano Scroll: the piano rail down the left edge that tracks scroll progress */
   piano: boolean;
+  /** page-change curtain: the original rising panel, or the Noir velvet drapes with a shimmering wordmark */
+  curtain: CurtainStyle;
 };
 
 export const NEON_DEFAULTS: NeonSettings = {
@@ -57,6 +65,7 @@ export const NEON_DEFAULTS: NeonSettings = {
   glass: 0.85,
   thickness: 1,
   piano: false,
+  curtain: "classic",
 };
 
 const KEY = "ng-neon";
@@ -98,6 +107,7 @@ function sanitize(saved: Partial<NeonSettings>): NeonSettings {
     glass: num(saved.glass, 0, 1, d.glass),
     thickness: num(saved.thickness, 0.5, 2, d.thickness),
     piano: typeof saved.piano === "boolean" ? saved.piano : d.piano,
+    curtain: CURTAIN_STYLES.some((c) => c.value === saved.curtain) ? (saved.curtain as CurtainStyle) : d.curtain,
   };
 }
 
@@ -133,7 +143,7 @@ export function NeonProvider({ children }: { children: ReactNode }) {
   }, []);
   const reset = useCallback(() => {
     setSettings((s) => {
-      const next = { ...NEON_DEFAULTS, on: s.on, piano: s.piano };
+      const next = { ...NEON_DEFAULTS, on: s.on, piano: s.piano, curtain: s.curtain };
       save(next);
       return next;
     });

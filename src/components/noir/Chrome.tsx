@@ -7,6 +7,8 @@ import { Logo, LogoMark } from "@/components/brand/Logo";
 import { ButtonLink } from "@/components/noir/primitives";
 import { SiteWaves } from "./SiteWaves";
 import { NeonSign } from "@/components/neon/NeonSign";
+import { useNeon } from "@/components/neon/NeonProvider";
+import { Shimmer } from "@/components/noir-motion/Typography";
 
 /** Stamped at build time; the site redeploys far more often than yearly. */
 const BUILD_YEAR = new Date().getFullYear();
@@ -70,15 +72,34 @@ export function Nav() {
   );
 }
 
-/** Stage-curtain page transition. */
+/**
+ * Stage-curtain page transition, in the style picked under "Page curtain" in
+ * the site menu: "classic" (one panel rises over the page) or "velvet" (the
+ * Noir motion drapes close from both sides over a shimmering NEXTGEN).
+ */
 export function Curtain() {
   const { phase } = useRouter();
+  const { curtain } = useNeon();
   // remount the mark each time the curtain closes so it redraws on every page change
   const [take, setTake] = useState(0);
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- replays the intro animation on prop change (prototype behaviour)
     if (phase === "cover") setTake((t) => t + 1);
   }, [phase]);
+  if (curtain === "velvet")
+    return (
+      <div className="nm-curtain" data-phase={phase} aria-hidden="true">
+        <div className="nm-curtain-panel nm-curtain-left" />
+        <div className="nm-curtain-panel nm-curtain-right" />
+        <div className="nm-curtain-mark">
+          <LogoMark size={108} draw={take > 0} duration={1.7} replayKey={take} decorative style={{ "--ng-surface": "#0d0b0d" }} />
+          <Shimmer key={take} className="nm-curtain-word" interval={2.4} delay={0.3}>
+            NEXTGEN
+          </Shimmer>
+          <span>THE NEXT MOVEMENT</span>
+        </div>
+      </div>
+    );
   return (
     <div className={`ng-curtain is-${phase}`} aria-hidden="true">
       <div className="ng-curtain-panel">

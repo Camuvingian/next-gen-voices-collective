@@ -4,6 +4,7 @@
 
 /* Noir Club: tokens first, then the ported prototype layout + noir layer. */
 @import "../styles/tokens.css";
+@import "../components/noir-motion/noir-motion.css";
 @import "../styles/styles.css";
 @import "../styles/noir.css";
 @import "../styles/glass.css";

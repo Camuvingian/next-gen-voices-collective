@@ -45,7 +45,7 @@ import { NextGenWavesLazy } from "@/components/nextgen-waves/NextGenWavesLazy";
 
 The waves fill their nearest positioned ancestor (`position: absolute; inset: 0`). The canvas has `pointer-events: none` and the component is `aria-hidden`, so everything above stays clickable. Input is read from `window` and hit-tested against the container.
 
-On this site the hero and footer go through `src/components/noir/SiteWaves.tsx`. It has one `ENGINE` switch: `"nextgen"` (this component) or `"harmonic"` (the original `HarmonicField`, kept as a fallback).
+On this site the hero and footer go through `src/components/noir/SiteWaves.tsx`. Its `ENGINE` switch picks `"noir"` (the Canvas 2D waves in `src/components/noir-motion`, the current default), `"nextgen"` (this component) or `"harmonic"` (the original `HarmonicField`).
 
 ## Props
 

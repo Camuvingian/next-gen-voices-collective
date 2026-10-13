@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { NEON_COLOURS, NEON_DEFAULTS, NEON_FONTS, useNeon, type NeonSettings } from "./NeonProvider";
+import { CURTAIN_STYLES, NEON_COLOURS, NEON_DEFAULTS, NEON_FONTS, useNeon, type NeonSettings } from "./NeonProvider";
 
 /**
  * Neon menu: a glass power button in the top-right corner that expands on
@@ -13,7 +13,7 @@ import { NEON_COLOURS, NEON_DEFAULTS, NEON_FONTS, useNeon, type NeonSettings } f
  * glass reflections and tube thickness.
  */
 
-type SliderKey = Exclude<keyof NeonSettings, "on" | "font" | "colour" | "piano">;
+type SliderKey = Exclude<keyof NeonSettings, "on" | "font" | "colour" | "piano" | "curtain">;
 
 const SLIDERS: { key: SliderKey; label: string; min: number; max: number; step: number; unit?: string }[] = [
   { key: "intensity", label: "Brightness", min: 0, max: 2, step: 0.05 },
@@ -99,6 +99,17 @@ export function NeonMenu() {
             <Switch id="ngn-piano" className="ngn-switch" checked={neon.piano} onCheckedChange={(v) => neon.set("piano", v)} />
           </span>
         </div>
+
+        <fieldset className="ngn-ctl ngn-ctl--curtain">
+          <legend className="ngn-menu-label">Page curtain</legend>
+          <div className="ngn-seg ngn-seg--2" role="radiogroup" aria-label="Page curtain">
+            {CURTAIN_STYLES.map((c) => (
+              <button key={c.value} type="button" role="radio" aria-checked={neon.curtain === c.value} className="ngn-seg-btn" onClick={() => neon.set("curtain", c.value)}>
+                {c.label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
 
         <div className="ngn-menu-row">
           <label htmlFor="ngn-power" className="ngn-menu-title">
