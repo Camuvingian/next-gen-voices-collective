@@ -272,7 +272,7 @@
 /* ── Bolt logo (Logo: "Bolt" in the site menu) ─────────────────── */
 /* the hero: a "NextGen Voices" neon sign with the bolt standing at the end of the line */
 .ng-hero-sign { margin: 4px 0 22px; font-size: clamp(64px, 1.6rem + 7.4vw, 150px); line-height: 1.1; font-weight: 400; }
-.ng-hero-sign-end { white-space: nowrap; }
+.ng-hero-sign-end, .ng-hero-sign-end > .ng-neon-sign { white-space: nowrap; }
 /* the bolt rises from just under the cap line and dips below the baseline; its paint drips run further */
 .ng-hero-bolt { width: 1.06em; height: 1.95em; vertical-align: -0.97em; margin-left: 0.04em; }
 .ng-hero-tagline { margin: 0 0 26px; font-family: var(--font-display); text-transform: uppercase; font-size: clamp(26px, 0.8rem + 2.4vw, 52px); line-height: 1.05; letter-spacing: 0.05em; animation: ng-up 1s 450ms var(--ease-out) both; }
@@ -282,6 +282,11 @@
   .ng-hero-sign { font-size: clamp(56px, 19vw, 84px); line-height: 1; margin-bottom: 30px; }
   .ng-hero-sign-end { display: block; padding-left: 0.85em; }
   .ng-hero-tagline .nm-shimmer { display: block; width: fit-content; }
+  /* Tube and Deco are wider than the script: scale them so "Voices ⚡" still fits on one line,
+     with a shallower set-in (each divisor is that line's width in em) */
+  .ng-hero-sign[data-font="tube"] { font-size: min(84px, calc((100vw - 2 * var(--gutter)) / 4.75)); }
+  .ng-hero-sign[data-font="deco"] { font-size: min(84px, calc((100vw - 2 * var(--gutter)) / 5.15)); }
+  .ng-hero-sign:is([data-font="tube"], [data-font="deco"]) .ng-hero-sign-end { padding-left: 0.4em; }
 }
 /* with the burger menu, the settings button sits below it: start the hero copy clear of it */
 @media (max-width: 860px) { .ng-hero { padding-top: 128px; } }

@@ -97,10 +97,12 @@ function ClassicHead() {
 const strike = (centre: { x: number; y: number }) => window.dispatchEvent(new CustomEvent("ng:strike", { detail: centre }));
 
 function BoltHead() {
+  // the lettering sets the sign's width, so phones size each one to fit (noir.css)
+  const { font } = useNeon();
   return (
     <>
       <HeroEyebrow />
-      <h1 className="ng-hero-sign">
+      <h1 className="ng-hero-sign" data-font={font}>
         <NeonSign rise={150} glow={1.25}>
           NextGen
         </NeonSign>{" "}
