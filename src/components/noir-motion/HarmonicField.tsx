@@ -15,6 +15,8 @@ const NOTE_SPEED = 0.4;
 /** the on-screen rate of middle C. Real pitches are far beyond a 60 Hz screen, so
  *  every note is scaled by the same factor: intervals keep their true ratios. */
 const C4_HZ = 0.9;
+/** how strongly the lines show against the page: 1 is the reference pack's look */
+const VISIBILITY = 1.6;
 
 /** Four perspective ribbons. Canvas2D deliberately avoids a WebGL/runtime dependency. */
 export function HarmonicField({
@@ -175,11 +177,11 @@ export function HarmonicField({
           else ctx.moveTo(x, y);
         }
         ctx.strokeStyle = voice === 0 || voice === 2 ? s.a : s.b;
-        ctx.globalAlpha = (0.18 + bright * 0.34) * (voice === 0 ? 1 : 0.78);
-        ctx.lineWidth = j === Math.floor(lines / 2) ? 1.7 : 0.75;
+        ctx.globalAlpha = Math.min(1, (0.18 + bright * 0.34) * (voice === 0 ? 1 : 0.78) * VISIBILITY);
+        ctx.lineWidth = j === Math.floor(lines / 2) ? 2 : 1;
         ctx.stroke();
         if (j === Math.floor(lines / 2)) {
-          ctx.globalAlpha = 0.045;
+          ctx.globalAlpha = 0.045 * VISIBILITY;
           ctx.lineWidth = 8;
           ctx.stroke();
         }
