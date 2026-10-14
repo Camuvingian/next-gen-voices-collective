@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef } from "react";
+import { fieldStage } from "./fieldStage";
 import { clamp, useFrame, useMotion } from "./motion";
 export interface HarmonicFieldProps {
   density?: number;
@@ -97,8 +98,18 @@ export function HarmonicField({
     });
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
+    // the waves are drawn on a landscape stage, cropped to a portrait box, so a
+    // phone shows the desktop waves' middle rather than squashing them (fieldStage.ts)
+    const stage = fieldStage(w, h),
+      sw = stage.width,
+      v = stage.v,
+      toStage = (f: number) => (stage.offset + f * w) / sw;
     const lines = clamp(Math.floor(density), 3, w < 600 ? 9 : 20),
-      steps = w < 600 ? 110 : 190;
+      steps = Math.ceil(((w < 600 ? 110 : 190) * sw) / w),
+      first = Math.max(0, Math.floor((stage.offset / sw) * steps) - 1),
+      end = Math.min(steps, Math.ceil(((stage.offset + w) / sw) * steps) + 1),
+      cx = toStage(s.x),
+      crx = toStage(s.rx);
     const chord = 0.5 - 0.5 * Math.cos((t * Math.PI) / 20);
     const ratios = [1, 1.25 - 0.05 * chord, 1.5, 2];
     // the notes' sound waves depend only on u, so they're summed once per frame:
@@ -110,11 +121,12 @@ export function HarmonicField({
     if (sounding) {
       res.fill(0);
       for (const n of s.notes) {
-        const reach = NOTE_SPEED * n.age,
+        const nrx = toStage(n.rx),
+          reach = NOTE_SPEED * n.age,
           a = n.amp * Math.min(1, n.age * 14),
           phase = 2 * Math.PI * n.f * n.age;
-        for (let i = 0; i <= steps; i++) {
-          const d = Math.abs(i / steps - n.rx),
+        for (let i = first; i <= end; i++) {
+          const d = Math.abs(i / steps - nrx),
             front = clamp((reach - d) * 14, 0, 1);
           if (front > 0) res[i] += a * front * Math.exp(-d * 1.4) * Math.sin(n.k * d - phase);
         }
@@ -126,16 +138,16 @@ export function HarmonicField({
         const z = j / lines - 0.5,
           bright = 1 - Math.abs(z) * 1.5;
         ctx.beginPath();
-        for (let i = 0; i <= steps; i++) {
+        for (let i = first; i <= end; i++) {
           const u = i / steps,
             env = Math.pow(Math.sin(u * Math.PI), 1.3);
           const conductor =
-            1 + (0.35 + s.energy) * Math.exp(-Math.pow((u - s.x) * 5, 2));
+            1 + (0.35 + s.energy) * Math.exp(-Math.pow((u - cx) * 5, 2));
           const pulse =
             s.ripple > 0 && s.ripple < 3
-              ? Math.sin((Math.abs(u - s.rx) - s.ripple * 0.4) * 42) *
+              ? Math.sin((Math.abs(u - crx) - s.ripple * 0.4) * 42) *
                 Math.exp(
-                  -Math.pow((Math.abs(u - s.rx) - s.ripple * 0.4) * 10, 2),
+                  -Math.pow((Math.abs(u - crx) - s.ripple * 0.4) * 10, 2),
                 ) *
                 Math.exp(-s.ripple)
               : 0;
@@ -147,19 +159,19 @@ export function HarmonicField({
                 j * 0.07,
             ) +
             0.3 * Math.sin(u * Math.PI * 7 - t * 0.55 + j * 0.09);
-          const x = u * w;
+          const x = u * sw - stage.offset;
           const y =
             h * 0.54 +
-            (voice - 1.5) * h * 0.034 +
-            z * h * 0.17 +
+            (voice - 1.5) * v * 0.034 +
+            z * v * 0.17 +
             env *
               (wave + pulse + (sounding ? res[i] : 0)) *
-              h *
+              v *
               0.16 *
               clamp(intensity, 0, 2) *
               conductor +
-            (u - 0.5) * (s.y - 0.5) * h * 0.22;
-          if (i) ctx.lineTo(x, y);
+            (u - 0.5) * (s.y - 0.5) * v * 0.22;
+          if (i > first) ctx.lineTo(x, y);
           else ctx.moveTo(x, y);
         }
         ctx.strokeStyle = voice === 0 || voice === 2 ? s.a : s.b;
