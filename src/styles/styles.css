@@ -425,7 +425,11 @@ button:hover .ng-media-play { transform: scale(1.08); }
 .ng-input:focus { outline: none; border-color: var(--ng-accent-ink); box-shadow: 0 0 0 4px var(--ng-accent-soft); }
 .ng-input::placeholder { color: color-mix(in srgb, var(--ng-muted) 70%, transparent); }
 .ng-textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
-.ng-input[type="date"] { color-scheme: inherit; }
+/* iOS Safari gives native date inputs an intrinsic min-width (and its own height)
+   that ignores width: 100%, so on a phone the field ran off the form's edge */
+.ng-input[type="date"] { color-scheme: inherit; display: block; min-width: 0; max-width: 100%; -webkit-appearance: none; appearance: none; }
+.ng-input[type="date"]::-webkit-date-and-time-value { text-align: left; margin: 0; }
+.ng-input[type="date"]::-webkit-datetime-edit { padding: 0; }
 .ng-select-wrap { position: relative; }
 .ng-select { appearance: none; padding-right: 44px; cursor: pointer; }
 .ng-select-wrap svg { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--ng-muted); }
