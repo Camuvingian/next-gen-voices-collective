@@ -66,15 +66,15 @@ export type NeonSettings = {
 export const NEON_DEFAULTS: NeonSettings = {
   logo: "bolt",
   on: true,
-  font: "script",
+  font: "deco",
   colour: "red",
   intensity: 1,
   glow: 1,
   spread: 1,
   glass: 0.85,
   thickness: 1,
-  piano: false,
-  curtain: "classic",
+  piano: true,
+  curtain: "velvet",
 };
 
 const KEY = "ng-neon";

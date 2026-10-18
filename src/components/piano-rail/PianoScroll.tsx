@@ -9,7 +9,7 @@ const NextGenPianoRail = dynamic(() => import("./NextGenPianoRail").then((m) => 
 
 /**
  * Piano Scroll: the Piano Rail down the left edge, driven by the "Piano Scroll"
- * switch in the neon menu (off by default). As the page scrolls, a chord walks
+ * switch in the neon menu (on by default). As the page scrolls, a chord walks
  * down the keys, so the keyboard doubles as a scroll-progress indicator.
  */
 export function PianoScroll() {

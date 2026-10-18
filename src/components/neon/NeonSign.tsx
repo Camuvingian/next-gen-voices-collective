@@ -42,7 +42,7 @@ type Material = {
 
 type Props = Material & {
   children: string;
-  /** lettering: "script" (site default), "tube", "deco" or any CSS font-family; defaults to the visitor's choice */
+  /** lettering: "script", "tube", "deco" (site default) or any CSS font-family; defaults to the visitor's choice */
   font?: NeonFont;
   /** any CSS colour or variable; defaults to the site's neon colour */
   color?: string;

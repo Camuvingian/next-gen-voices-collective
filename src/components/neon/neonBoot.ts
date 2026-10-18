@@ -8,12 +8,12 @@
  *  - power   → data-neon="on|off"
  *  - colour  → data-ng-hl="ruby|white|…" for presets, or the --hl* and brand
  *              tokens set inline for a custom "#rrggbb"
- *  - lettering other than the default → data-neon-pending, which hides the
+ *  - lettering other than the default (deco) → data-neon-pending, which hides the
  *    signs until React has drawn them in the saved lettering
  *  - a logo other than the default (bolt) → data-brand-pending, which hides
  *    the hero, the nav/footer lockups and the curtain marks until React has
  *    drawn them in the saved style
- *  - Piano Scroll on → data-ngp-open, so the page is already offset for the
+ *  - Piano Scroll on (the default) → data-ngp-open, so the page is already offset for the
  *    piano rail on first paint (boot only; the rail manages it afterwards)
  */
 export function applyNeonSettings(settings?: { on?: boolean; colour?: string; font?: string; piano?: boolean; logo?: string } | null, pendingFont?: boolean) {
@@ -62,7 +62,7 @@ export function applyNeonSettings(settings?: { on?: boolean; colour?: string; fo
   } else if (presets.indexOf(colour) >= 0) root.dataset.ngHl = colour;
   else delete root.dataset.ngHl;
 
-  if (pendingFont !== false && s.font && s.font !== "script") root.dataset.neonPending = "";
-  if (pendingFont !== false && s.piano === true) root.dataset.ngpOpen = "";
+  if (pendingFont !== false && s.font && s.font !== "deco") root.dataset.neonPending = "";
+  if (pendingFont !== false && s.piano !== false) root.dataset.ngpOpen = "";
   if (pendingFont !== false && s.logo && s.logo !== "bolt") root.dataset.brandPending = "";
 }
