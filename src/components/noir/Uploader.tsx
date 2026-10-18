@@ -1,13 +1,15 @@
 "use client";
 
+import { uploadPresigned } from "@vercel/blob/client";
 import { useEffect, useRef, useState } from "react";
-
-const MAX_MB = 500;
+import { VIDEO_MAX_MB as MAX_MB, VIDEO_PREFIX } from "@/lib/forms";
 
 type Props = {
   id: string;
   file: File | null;
   onFile: (f: File | null) => void;
+  /** the stored video's path once the upload finishes; null while uploading, after a failure or when cleared */
+  onUploaded: (path: string | null) => void;
   error?: string;
 };
 
@@ -15,26 +17,39 @@ function fmt(bytes: number) {
   return bytes > 1e9 ? `${(bytes / 1e9).toFixed(2)} GB` : `${(bytes / 1e6).toFixed(1)} MB`;
 }
 
+/** auditions/<random id>/<tidy file name>: unguessable, and never clashes with another upload */
+const storeName = (f: File) =>
+  `${VIDEO_PREFIX}${crypto.randomUUID()}/${f.name.normalize("NFKD").replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "").slice(-80) || "audition.mp4"}`;
+
 /**
- * Video drop-zone. In production the file goes straight from the browser to
- * storage via a presigned URL (Mux Direct Upload / Cloudflare R2 / S3 multipart),
- * so large phone videos never pass through the web server. Progress here is
- * simulated for the prototype.
+ * Video drop-zone. The file goes straight from the browser to the private
+ * Vercel Blob store (see app/api/audition-video), in parts for big files, so
+ * phone videos never pass through the web server. The progress bar is real.
  */
-export function Uploader({ id, file, onFile, error }: Props) {
+export function Uploader({ id, file, onFile, onUploaded, error }: Props) {
   const input = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [done, setDone] = useState(false);
   const [localErr, setLocalErr] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  // the parent's callbacks change every render; the upload only needs the latest
+  const report = useRef(onUploaded);
+  const clear = useRef(onFile);
+  useEffect(() => {
+    report.current = onUploaded;
+    clear.current = onFile;
+  });
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect -- the upload's state follows the chosen file */
+    setProgress(0);
+    setDone(false);
     if (!file) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- replays the intro animation on prop change (prototype behaviour)
-      setProgress(0);
       setPreview(null);
       return;
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
     let url: string | null = null;
     try {
       url = URL.createObjectURL(file);
@@ -42,15 +57,33 @@ export function Uploader({ id, file, onFile, error }: Props) {
     } catch {
       setPreview(null);
     }
-    setProgress(0);
-    let p = 0;
-    const t = window.setInterval(() => {
-      p = Math.min(100, p + 4 + Math.random() * 9);
-      setProgress(p);
-      if (p >= 100) clearInterval(t);
-    }, 120);
+    const ac = new AbortController();
+    report.current(null);
+    uploadPresigned(storeName(file), file, {
+      access: "private",
+      handleUploadUrl: "/api/audition-video",
+      contentType: file.type,
+      multipart: file.size > 25_000_000,
+      abortSignal: ac.signal,
+      onUploadProgress: (e) => setProgress(e.percentage),
+    })
+      .then((blob) => {
+        setProgress(100);
+        setDone(true);
+        report.current(blob.pathname);
+      })
+      .catch((err: unknown) => {
+        if (ac.signal.aborted) return;
+        console.error("[upload]", err);
+        setLocalErr(
+          err instanceof Error && /switched on|Too many/.test(err.message)
+            ? err.message
+            : "The upload didn't finish. Check your connection and try again, or paste a link to your video below.",
+        );
+        clear.current(null);
+      });
     return () => {
-      clearInterval(t);
+      ac.abort();
       if (url) URL.revokeObjectURL(url);
     };
   }, [file]);
@@ -66,7 +99,6 @@ export function Uploader({ id, file, onFile, error }: Props) {
   const err = localErr || error;
 
   if (file) {
-    const done = progress >= 100;
     return (
       <div className={["ng-upload is-file", done && "is-done"].filter(Boolean).join(" ")}>
         {preview ? <video src={preview} muted playsInline className="ng-upload-thumb" /> : <span className="ng-upload-thumb" />}
@@ -79,7 +111,14 @@ export function Uploader({ id, file, onFile, error }: Props) {
             <span style={{ transform: `scaleX(${progress / 100})` }} />
           </span>
         </div>
-        <button type="button" className="ng-btn ng-btn--ghost ng-btn--sm" onClick={() => onFile(null)}>
+        <button
+          type="button"
+          className="ng-btn ng-btn--ghost ng-btn--sm"
+          onClick={() => {
+            onUploaded(null);
+            onFile(null);
+          }}
+        >
           <span className="ng-btn-label">Replace</span>
         </button>
       </div>

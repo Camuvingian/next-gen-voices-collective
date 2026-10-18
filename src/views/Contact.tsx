@@ -1,28 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { z } from "zod";
 import { PageHeader } from "@/views/About";
 import { InstagramGlyph } from "@/components/noir/Chrome";
 import { Button, Choice, Eyebrow, Field, Input, Reveal, Select, Textarea } from "@/components/noir/primitives";
 import { SITE } from "@/lib/content";
 import { NeonSign } from "@/components/neon/NeonSign";
+import { contactSchemaFor, HONEYPOT } from "@/lib/forms";
 
 type Kind = "general" | "booking" | "auditions" | "press";
-
-const base = z.object({
-  kind: z.enum(["general", "booking", "auditions", "press"], { error: "Choose what your enquiry is about" }),
-  name: z.string().trim().min(1, "Enter your name"),
-  email: z.string().email("Enter an email we can reply to"),
-  phone: z.string(),
-  message: z.string().trim().min(10, "Add a short message so we know how to help"),
-});
-const booking = base.extend({
-  eventDate: z.string().min(1, "Add the event date (approximate is fine)"),
-  location: z.string().trim().min(1, "Add the venue or town"),
-  eventType: z.string().min(1, "Choose the type of event"),
-  audience: z.string(),
-});
 
 const EMPTY = { kind: "" as Kind | "", name: "", email: "", phone: "", message: "", eventDate: "", location: "", eventType: "", audience: "" };
 
@@ -30,14 +16,16 @@ export function Contact() {
   const [d, setD] = useState(EMPTY);
   const [e, setE] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [trap, setTrap] = useState("");
   const [copied, setCopied] = useState(false);
   const set = (k: keyof typeof EMPTY, v: string) => {
     setD((x) => ({ ...x, [k]: v }));
     if (e[k]) setE((x) => ({ ...x, [k]: "" }));
   };
 
-  const submit = () => {
-    const r = (d.kind === "booking" ? booking : base).safeParse(d);
+  const submit = async () => {
+    const r = contactSchemaFor(d.kind).safeParse(d);
     if (!r.success) {
       const errs: Record<string, string> = {};
       r.error.issues.forEach((i) => (errs[String(i.path[0])] ||= i.message));
@@ -45,7 +33,19 @@ export function Contact() {
       return;
     }
     setStatus("sending");
-    window.setTimeout(() => setStatus("sent"), 1200);
+    setSendError(null);
+    try {
+      const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...d, [HONEYPOT]: trap }) });
+      const out = (await res.json().catch(() => ({}))) as { error?: string; fields?: Record<string, string> };
+      if (!res.ok) {
+        if (out.fields) setE(out.fields);
+        throw new Error(out.error || "We couldn't send your message just now. Please try again.");
+      }
+      setStatus("sent");
+    } catch (err) {
+      setSendError(err instanceof Error && err.message !== "Failed to fetch" ? err.message : "We couldn't reach the server. Check your connection and try again.");
+      setStatus("idle");
+    }
   };
 
   const copy = async () => {
@@ -160,6 +160,13 @@ export function Contact() {
                   placeholder={d.kind === "booking" ? "Tell us about the event, timings and what you'd like the Collective to perform." : ""}
                 />
               </Field>
+              {/* left empty by people; bots fill it in */}
+              <input type="text" name={HONEYPOT} value={trap} onChange={(x) => setTrap(x.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" className="ng-sr" />
+              {sendError && (
+                <p className="ng-error ng-send-error" role="alert">
+                  {sendError}
+                </p>
+              )}
               <div className="ng-apply-actions">
                 <span className="ng-hint">We never share your details.</span>
                 <Button type="submit" size="lg" disabled={status === "sending"}>

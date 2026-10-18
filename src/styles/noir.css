@@ -392,3 +392,6 @@
   .ng-credits .nm-marquee-item, .ng-credits .nm-marquee-item:nth-child(2n) { gap: 40px; padding-right: 40px; }
   .ng-credit { zoom: 0.72; }
 }
+
+/* a form that couldn't be sent: the reason, just above the buttons */
+.ng-send-error { margin-top: 24px; padding: 12px 16px; border: 1px solid color-mix(in srgb, var(--ng-danger) 50%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--ng-danger) 8%, transparent); }

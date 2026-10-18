@@ -1,65 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { z } from "zod";
 import { PageHeader } from "@/views/About";
 import { Uploader } from "@/components/noir/Uploader";
 import { Button, ButtonLink, Choice, Eyebrow, Field, Input, Reveal, Select, Textarea } from "@/components/noir/primitives";
 import { ELIGIBILITY, SITE, STEPS } from "@/lib/content";
 import { NeonSign } from "@/components/neon/NeonSign";
+import { ageOn, AUDITION_STEPS, HONEYPOT, VIDEO_KEEP_DAYS } from "@/lib/forms";
 
 /* ── Schema ──────────────────────────────────────────────
-   One zod schema per step. The same schemas validate on the server
-   (Next.js route handler / server action) before anything is stored. */
-
-function ageOn(dob: string, on = new Date()) {
-  const d = new Date(dob);
-  let a = on.getFullYear() - d.getFullYear();
-  const m = on.getMonth() - d.getMonth();
-  if (m < 0 || (m === 0 && on.getDate() < d.getDate())) a--;
-  return a;
-}
-
-const singer = z.object({
-  firstName: z.string().trim().min(1, "Enter the singer's first name"),
-  lastName: z.string().trim().min(1, "Enter the singer's last name"),
-  dob: z
-    .string()
-    .min(1, "Enter a date of birth")
-    .refine((v) => {
-      const a = ageOn(v);
-      return a >= 13 && a <= 18;
-    }, "NextGen is for singers aged 13–18. Check the date, or get in touch if you're close to the range."),
-  schoolYear: z.string().min(1, "Choose a school year"),
-  singerEmail: z.union([z.literal(""), z.string().email("That email doesn't look right")]),
-});
-
-const guardian = z.object({
-  gName: z.string().trim().min(1, "Enter a parent or guardian's name"),
-  gRelation: z.string().min(1, "Choose a relationship"),
-  gEmail: z.string().email("Enter an email we can reach you on"),
-  gPhone: z.string().regex(/^[+\d][\d\s()-]{8,}$/, "Enter a phone number, e.g. 07700 900123"),
-});
-
-const voice = z.object({
-  voiceType: z.string().min(1, "Choose a voice type, or 'Not sure'"),
-  styles: z.array(z.string()).min(1, "Pick at least one style"),
-  experience: z.string().trim().min(20, "Tell us a little more (a sentence or two is plenty)"),
-  why: z.string().trim().min(40, "Give us a few sentences, at least 40 characters"),
-  available: z.literal(true, { error: "Confirm you can attend Saturday rehearsals" }),
-});
-
-const video = z
-  .object({
-    file: z.any(),
-    link: z.string(),
-    song: z.string().trim().min(1, "Tell us what you're singing"),
-    consent: z.literal(true, { error: "A parent or guardian needs to confirm consent" }),
-    privacy: z.literal(true, { error: "Accept the privacy notice to continue" }),
-  })
-  .refine((v) => v.file || /^https?:\/\/\S+$/.test(v.link), { message: "Upload a video or paste a link to one", path: ["file"] });
-
-const SCHEMAS = [singer, guardian, voice, video];
+   One zod schema per step, from lib/forms.ts; /api/apply checks the whole
+   application again with the same rules before anything is sent. */
+const SCHEMAS = AUDITION_STEPS;
 const STEP_NAMES = ["Singer", "Parent / guardian", "Voice & experience", "Video & consent"];
 
 type FormState = {
@@ -78,6 +30,8 @@ type FormState = {
   why: string;
   available: boolean;
   file: File | null;
+  /** the uploaded video in the store, once its upload has finished */
+  videoPath: string;
   link: string;
   song: string;
   heard: string;
@@ -101,6 +55,7 @@ const INITIAL: FormState = {
   why: "",
   available: false,
   file: null,
+  videoPath: "",
   link: "",
   song: "",
   heard: "",
@@ -115,6 +70,8 @@ export function Auditions() {
   const [data, setData] = useState<FormState>(INITIAL);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"editing" | "sending" | "sent">("editing");
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [trap, setTrap] = useState("");
 
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => {
     setData((d) => ({ ...d, [k]: v }));
@@ -122,7 +79,7 @@ export function Auditions() {
   };
 
   const validate = (i: number) => {
-    const r = SCHEMAS[i].safeParse(data);
+    const r = SCHEMAS[i].safeParse({ ...data, uploading: !!data.file && !data.videoPath });
     if (r.success) {
       setErrors({});
       return true;
@@ -143,10 +100,28 @@ export function Auditions() {
     document.getElementById("apply")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   const back = () => setStep((s) => Math.max(0, s - 1));
-  const submit = () => {
+  const submit = async () => {
     if (!validate(3)) return;
     setStatus("sending");
-    window.setTimeout(() => setStatus("sent"), 1400);
+    setSendError(null);
+    const { file: _file, ...fields } = data; // the video itself is already in the store
+    void _file;
+    try {
+      const res = await fetch("/api/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...fields, [HONEYPOT]: trap }),
+      });
+      const out = (await res.json().catch(() => ({}))) as { error?: string; fields?: Record<string, string> };
+      if (!res.ok) {
+        if (out.fields) setErrors(out.fields);
+        throw new Error(out.error || "We couldn't send your application just now. Please try again.");
+      }
+      setStatus("sent");
+    } catch (err) {
+      setSendError(err instanceof Error && err.message !== "Failed to fetch" ? err.message : "We couldn't reach the server. Check your connection and try again.");
+      setStatus("editing");
+    }
   };
 
   const age = useMemo(() => (data.dob ? ageOn(data.dob) : null), [data.dob]);
@@ -375,7 +350,7 @@ export function Auditions() {
                 {step === 3 && (
                   <div className="ng-stack">
                     <Field id="file" label="Audition video" required error={undefined}>
-                      <Uploader id="file" file={data.file} onFile={(f) => set("file", f)} error={e.file} />
+                      <Uploader id="file" file={data.file} onFile={(f) => set("file", f)} onUploaded={(p) => set("videoPath", p ?? "")} error={e.file || e.uploading} />
                     </Field>
                     <Field id="link" label="Or paste a link" hint="YouTube (unlisted), Google Drive or Dropbox. Make sure it's viewable.">
                       <Input id="link" type="url" placeholder="https://" value={data.link} onChange={(x) => set("link", x.target.value)} />
@@ -400,13 +375,20 @@ export function Auditions() {
                     {e.consent && <p className="ng-error">{e.consent}</p>}
                     <label className={["ng-check", e.privacy && "has-error"].filter(Boolean).join(" ")}>
                       <input id="privacy" type="checkbox" checked={data.privacy} onChange={(x) => set("privacy", x.target.checked)} />
-                      <span>I’ve read the privacy notice. Videos are stored securely, used only for this audition and deleted after 6 months.</span>
+                      <span>I’ve read the privacy notice. Videos are stored privately, used only for this audition and deleted after {VIDEO_KEEP_DAYS} days.</span>
                     </label>
                     {e.privacy && <p className="ng-error">{e.privacy}</p>}
                   </div>
                 )}
               </div>
 
+              {/* left empty by people; bots fill it in */}
+              <input type="text" name={HONEYPOT} value={trap} onChange={(x) => setTrap(x.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" className="ng-sr" />
+              {sendError && (
+                <p className="ng-error ng-send-error" role="alert">
+                  {sendError}
+                </p>
+              )}
               <div className="ng-apply-actions">
                 {step > 0 ? (
                   <Button type="button" variant="ghost" onClick={back}>
