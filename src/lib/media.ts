@@ -34,3 +34,10 @@ export const PHOTOS = {
 } satisfies Record<string, Photo>;
 
 export type PhotoKey = keyof typeof PHOTOS;
+
+/** The founder page: Bradley's photos and logo, from bradleyvocalcoach.com/about. */
+export const FOUNDER_PHOTOS = {
+  portrait: { src: "/media/founder/bradley-portrait.jpg", alt: "Bradley Barton-Young, chin resting on his hand, in a cream jacket", width: 1600, height: 1067, focus: "28% 40%" },
+  onStage: { src: "/media/founder/bradley-on-stage.jpg", alt: "Bradley singing into a microphone on stage", width: 1530, height: 886, focus: "45% 35%" },
+  logo: { src: "/media/founder/bvc-logo.png", alt: "Bradley Vocal Coach: Master your voice", width: 1200, height: 512 },
+} satisfies Record<string, Photo>;

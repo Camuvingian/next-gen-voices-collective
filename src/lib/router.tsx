@@ -4,12 +4,13 @@ import NextLink from "next/link";
 import { usePathname, useRouter as useNextRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type AnchorHTMLAttributes, type ReactNode } from "react";
 
-export const ROUTES = ["home", "about", "auditions", "gallery", "contact"] as const;
+export const ROUTES = ["home", "about", "founder", "auditions", "gallery", "contact"] as const;
 export type Route = (typeof ROUTES)[number];
 
 export const ROUTE_LABELS: Record<Route, string> = {
   home: "Home",
   about: "About",
+  founder: "Founder",
   auditions: "Auditions",
   gallery: "Gallery",
   contact: "Contact",

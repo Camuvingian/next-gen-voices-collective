@@ -93,3 +93,44 @@ export const GALLERY: GalleryItem[] = [
   { id: "g7", kind: "stage", cat: "Performances", title: "Showcase, full Collective", ratio: "4 / 3", seed: 31, video: true },
   { id: "g8", kind: "beams", cat: "Performances", title: "Stage lights", ratio: "3 / 4", seed: 41 },
 ];
+
+/**
+ * The founder page (views/Founder.tsx). The words are Bradley's own, from the
+ * "About" page of his coaching site, bradleyvocalcoach.com/about.
+ */
+export const FOUNDER = {
+  name: "Bradley Barton-Young",
+  first: "Bradley",
+  last: "Barton-Young.",
+  lede: "Singer-songwriter, recording artist, performer and vocal coach, and the founder of NextGen Voice Collective.",
+  intro: [
+    "With years of experience in the music industry, Bradley has established himself as a versatile and respected performer, singer-songwriter, recording artist and vocal coach. His work spans recording studios, major stages and elite training institutions, including stage time with Sam Smith and many others.",
+    "He is known for his four-octave-plus range, vocal agility, expressive ad-libs and rich tone, and just as much for his deep understanding of the voice. His bespoke coaching method, developed through years of hands-on experience, is tailored to each singer's own vocal identity, and has delivered exceptional results across a wide range of abilities and styles.",
+  ],
+  stats: [
+    { label: "Range", value: "4+ octaves" },
+    { label: "Teaches at", value: "The BRIT School" },
+    { label: "On stage with", value: "Sam Smith" },
+  ],
+  teaching: [
+    "As a go-to professional singing practitioner at The BRIT School, Bradley helps train the next generation of vocalists, both on the main curriculum and as Singing Lead and Manager of the school's Saturday Programme, guiding young emerging artists.",
+    "He has also worked with signed artists at Platoon, the Apple-owned creative development company that backs independent musicians with funding, global exposure and mentorship. Among them is Olympia Vitalis, a rising artist gaining international attention for her distinctive voice.",
+  ],
+  singers:
+    "Bradley's clients have supported charting acts like Teddy Swims, earned places at top conservatoires in the UK and abroad, performed on national television and built strong followings online, with significant Spotify streaming numbers.",
+  highlights: [
+    "Royal Albert Hall, Queen Elizabeth Hall, Festival Hall and Wembley Arena",
+    "The St. Lucia Jazz Festival",
+    "West End: Matilda, Annie, West End Calling and more",
+    "Alongside RAYE at the NFL London halftime show, with the Flames Collective",
+    "On-site vocal coach for Olympia Vitalis's live “Angel Patience”",
+  ],
+  quotes: [
+    "Whether I’m performing or teaching, I’m always focused on helping voices connect: emotionally, technically and artistically.",
+    "The real reward is seeing someone step into their voice. That’s what it’s all about for me.",
+  ],
+  coaching: {
+    url: "https://www.bradleyvocalcoach.com",
+    body: "Bradley also offers personalised one-to-one coaching to singers at every stage, from total beginners to recording artists, unlocking each voice's full potential in a healthy, expressive and sustainable way.",
+  },
+};

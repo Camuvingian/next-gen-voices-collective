@@ -297,3 +297,48 @@
 
 /* a saved logo that isn't the default: hold the brand until React has drawn it (see neonBoot.ts) */
 :root[data-brand-pending] :is(.ng-hero-inner, .ng-lockup, .ng-curtain-panel > *, .nm-curtain-mark) { visibility: hidden; }
+
+/* ── top menu: a soft glint in the neon colour runs once through a link as the
+      pointer arrives, like a "thinking…" shimmer; it follows the colour picked in the site menu ── */
+@media (hover: hover) {
+  .ng-nav-links a:hover {
+    color: transparent;
+    background: linear-gradient(
+        100deg,
+        var(--ng-fg) 0 38%,
+        color-mix(in srgb, var(--hl) 85%, #fff) 50%,
+        var(--ng-fg) 62% 100%
+      )
+      0 0 / 260% 100% padding-box text;
+    -webkit-background-clip: text;
+    animation: ng-glimmer 1.05s cubic-bezier(0.4, 0, 0.6, 1) both;
+  }
+}
+/* six links: on narrower desktops they close up so Apply never gets squeezed */
+.ng-nav-cta { flex-shrink: 0; }
+@media (max-width: 1080px) {
+  .ng-nav-inner { gap: 14px; }
+  .ng-nav-links { gap: 0; }
+  .ng-nav-links a { padding-inline: 9px; letter-spacing: 0.07em; }
+  .ng-nav-links a::after { left: 9px; right: 9px; }
+}
+@keyframes ng-glimmer {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ng-nav-links a:hover { animation: none; background-position: 50% 0; }
+}
+
+/* ── founder page ── */
+.ng-founder-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; width: 100%; margin: 8px 0 0; padding-top: 24px; border-top: 1px solid var(--ng-line); }
+.ng-founder-stats dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ng-muted); margin-bottom: 6px; }
+.ng-founder-stats dd { margin: 0; font-family: var(--font-display); font-size: var(--step-1); color: var(--ng-fg); }
+.ng-founder-coach { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 28px; max-width: 720px; margin-inline: auto; padding-top: clamp(32px, 5vw, 64px); border-top: 1px solid var(--ng-line); }
+.ng-founder-logo { display: block; width: min(300px, 70vw); opacity: 0.92; transition: opacity var(--dur-fast); }
+.ng-founder-logo:hover { opacity: 1; }
+.ng-founder-logo img { display: block; width: 100%; height: auto; }
+.ng-founder-coach .ng-btn-row { justify-content: center; }
+@media (max-width: 560px) {
+  .ng-founder-stats { grid-template-columns: 1fr; gap: 14px; }
+}
