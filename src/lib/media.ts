@@ -41,3 +41,24 @@ export const FOUNDER_PHOTOS = {
   onStage: { src: "/media/founder/bradley-on-stage.jpg", alt: "Bradley singing into a microphone on stage", width: 1530, height: 886, focus: "45% 35%" },
   logo: { src: "/media/founder/bvc-logo.png", alt: "Bradley Vocal Coach: Master your voice", width: 1200, height: 512 },
 } satisfies Record<string, Photo>;
+
+const credit = (file: string, name: string, width: number, height: number) => ({ src: `/media/founder/credits/${file}.webp`, name, width, height });
+
+/** The credits ribbon on the founder page: the logo strip from bradleyvocalcoach.com, white on clear. */
+export const FOUNDER_CREDITS = [
+  credit("sam-smith", "Sam Smith", 253, 180),
+  credit("the-brit-school", "The BRIT School", 290, 180),
+  credit("raye", "RAYE", 413, 180),
+  credit("royal-albert-hall", "Royal Albert Hall", 684, 180),
+  credit("teddy-swims", "Teddy Swims", 242, 180),
+  credit("platoon", "Platoon", 180, 180),
+  credit("olympia-vitalis", "Olympia Vitalis", 413, 180),
+  credit("matilda", "Matilda the Musical", 140, 180),
+  credit("wembley", "Wembley", 341, 180),
+  credit("x-factor", "The X Factor", 274, 180),
+  credit("flames-collective", "Flames Collective", 438, 180),
+  credit("the-voice-uk", "The Voice UK", 177, 180),
+  credit("google", "Google", 547, 180),
+  credit("mazda", "Mazda", 175, 180),
+  credit("root-seventy-three", "Root Seventy Three", 262, 180),
+];

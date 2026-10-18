@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CreditsRibbon } from "@/components/noir/CreditsRibbon";
 import { MediaSlot } from "@/components/noir/MediaSlot";
 import { buttonVariants } from "@/components/ui/button";
 import { Arrow, ButtonLink, Eyebrow, Reveal } from "@/components/noir/primitives";
@@ -41,6 +42,12 @@ export function Founder() {
             ))}
           </dl>
         </Reveal>
+      </section>
+
+      {/* Credits: the logo ribbon from his coaching site */}
+      <section className="ng-founder-credits" aria-label="Artists, stages and brands Bradley and his singers have worked with">
+        <Eyebrow className="ng-wrap">Artists, stages &amp; credits</Eyebrow>
+        <CreditsRibbon />
       </section>
 
       {/* Teaching */}

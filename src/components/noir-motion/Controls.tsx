@@ -5,6 +5,7 @@ import {
   useState,
   type ButtonHTMLAttributes,
   type CSSProperties,
+  type ReactNode,
 } from "react";
 import { useMotion } from "./motion";
 export function NoirButton({
@@ -75,11 +76,16 @@ export function Marquee({
   speed = 38,
   direction = "left",
   pauseOnHover = true,
+  renderItem,
+  className = "",
 }: {
   items: string[];
   speed?: number;
   direction?: "left" | "right";
   pauseOnHover?: boolean;
+  /** site addition: draw each item yourself (the strings stay the screen-reader text) */
+  renderItem?: (item: string, i: number) => ReactNode;
+  className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null),
     row = useRef<HTMLDivElement>(null),
@@ -106,7 +112,7 @@ export function Marquee({
   return (
     <div
       ref={ref}
-      className="nm-marquee"
+      className={`nm-marquee ${className}`}
       data-run={m.run}
       data-reduced={m.reduced}
       data-hover={pauseOnHover}
@@ -135,7 +141,7 @@ export function Marquee({
               <span className="nm-marquee-unit" key={copy}>
                 {items.map((item, i) => (
                   <span key={i} className="nm-marquee-item">
-                    {item}
+                    {renderItem ? renderItem(item, i) : item}
                     <i>✦</i>
                   </span>
                 ))}

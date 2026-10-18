@@ -342,3 +342,53 @@
 @media (max-width: 560px) {
   .ng-founder-stats { grid-template-columns: 1fr; gap: 14px; }
 }
+
+/* ── founder credits: the home ticker with logos (noir/CreditsRibbon.tsx) ──
+   each logo is a mask over its text colour: silver, every third one lit in the
+   neon colour with a buzz, and any one under the pointer lights up while the
+   ribbon pauses */
+.ng-founder-credits { display: flex; flex-direction: column; gap: 18px; padding-bottom: clamp(56px, 7vw, 104px); }
+.ng-credits {
+  padding: 38px 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+.ng-credits .nm-marquee-item,
+.ng-credits .nm-marquee-item:nth-child(2n) { gap: 60px; padding-right: 60px; color: var(--nm-silver); -webkit-text-stroke: 0; transition: color 240ms, filter 240ms; }
+.ng-credit {
+  display: block;
+  flex-shrink: 0;
+  background: currentColor;
+  -webkit-mask: var(--logo) center / contain no-repeat;
+  mask: var(--logo) center / contain no-repeat;
+  opacity: 0.8;
+  transition: opacity 240ms, transform 360ms var(--ease-out);
+}
+/* the glow sits on the item: a mask would clip a filter on the logo itself */
+.ng-credits .nm-marquee-item:nth-child(3n) {
+  color: var(--hl);
+  filter: drop-shadow(0 0 5px rgba(var(--hl-rgb), 0.6)) drop-shadow(0 0 16px rgba(var(--hl-rgb), 0.35));
+  animation: ng-credit-buzz 7s linear infinite;
+}
+.ng-credits .nm-marquee-item:nth-child(6n) { animation-delay: -3.2s; }
+.ng-credits .nm-marquee-item:nth-child(3n) .ng-credit { opacity: 1; }
+.ng-credits .nm-marquee-item:hover {
+  color: var(--hl-2);
+  filter: drop-shadow(0 0 4px rgba(var(--hl-rgb), 0.9)) drop-shadow(0 0 20px rgba(var(--hl-rgb), 0.55));
+  animation: none;
+}
+.ng-credits .nm-marquee-item:hover .ng-credit { opacity: 1; transform: scale(1.08); }
+@keyframes ng-credit-buzz {
+  0%, 70% { opacity: 1; }
+  71% { opacity: 0.45; }
+  72% { opacity: 1; }
+  73.5% { opacity: 0.7; }
+  75%, 100% { opacity: 1; }
+}
+/* the neon power switch: everything back to silver, no glow */
+:root[data-neon="off"] .ng-credits .nm-marquee-item:is(:nth-child(3n), :hover) { color: var(--nm-silver); filter: none; animation: none; }
+@media (max-width: 600px) {
+  .ng-credits { padding: 26px 0; }
+  .ng-credits .nm-marquee-item, .ng-credits .nm-marquee-item:nth-child(2n) { gap: 40px; padding-right: 40px; }
+  .ng-credit { zoom: 0.72; }
+}
