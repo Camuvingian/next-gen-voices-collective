@@ -2,12 +2,18 @@ import type { Metadata } from "next";
 import { NeonBootScript } from "@/components/neon/NeonBootScript";
 import { Shell } from "@/components/noir/Shell";
 import { SITE } from "@/lib/content";
+import { OG_BASE, SITE_DESCRIPTION, SITE_URL } from "@/lib/seo";
 import { fontVariables } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: SITE.name, template: `%s · ${SITE.name}` },
-  description: "An elite, audition-based vocal ensemble for singers aged 13–18 in London. Young voices. One sound.",
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
+  // link previews (WhatsApp, iMessage, email…): the image is app/opengraph-image.jpg
+  openGraph: { ...OG_BASE, title: `${SITE.name}: ${SITE.tagline}`, description: SITE_DESCRIPTION, url: "/" },
+  twitter: { card: "summary_large_image", title: `${SITE.name}: ${SITE.tagline}`, description: SITE_DESCRIPTION },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
