@@ -46,7 +46,7 @@ Offset your layout while it's open (the component sets `data-ngp-open` on `<html
 | `showToggle` | `true` | Render the floating bottom-left show/hide button |
 | `showSoundButton` | `true` | Render the ♪ "play while scrolling" button |
 | `persistKey` | `"ngp-open"` | localStorage key for open/closed; `null` disables |
-| `baseMidi` | `48` (C3) | MIDI note of the top key; samples cover 48–108 |
+| `baseMidi` | `48` (C3) | MIDI note of the bottom key; samples cover 48–108 |
 | `keyHeight` | `[30, 24]` | White-key height in px: desktop, under 700px |
 | `scrollTriad` | `true` | Show the moving chord as you scroll |
 | `pushContent` | `true` | Set `data-ngp-open` on `<html>` while open |
@@ -66,8 +66,8 @@ Variables inherit from the host page and fall back to the NextGen Noir values:
 
 ## How it plays
 
-- **Keys:** standard layout (C D E F G A B with sharps between), top key C3, pitch rising down the page. Each key's `aria-label` is its note name (for example `F♯4`).
-- **Scroll chord:** `p = scrollY / (scrollHeight − innerHeight)`; lead white key = `round(p × (whiteCount − 5))`; the lead key and the white keys two and four below it go down.
+- **Keys:** standard layout (C D E F G A B with sharps between), bottom key C3, pitch falling down the page (high notes at the top). Each key's `aria-label` is its note name (for example `F♯4`).
+- **Scroll chord:** `p = scrollY / (scrollHeight − innerHeight)`; lead white key (counted up from the bottom) = `round((1 − p) × (whiteCount − 6))`; the lead key and the white keys two and four above it go down, so the chord walks down the rail as you scroll.
 - **Sound:** the nearest sample is re-pitched by `playbackRate = 2^((midi − root)/12)` (at most ±1 semitone), with velocity gain `v²`, a 0.09 s damper on release, and a synthesised 2.2 s hall reverb at 28% wet.
 - **Audio unlock:** browsers allow sound only after a user gesture. The first key press (or the toggle) creates the audio context and decodes the samples (about 0.7 MB).
 - **Reduced motion:** no glissando, float or slide transitions.

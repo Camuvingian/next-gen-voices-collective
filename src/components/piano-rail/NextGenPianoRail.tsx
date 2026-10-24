@@ -12,7 +12,8 @@ import { loadPiano, noteOff, noteOn, strike } from "./pianoEngine";
  *  - Press a key to play it, hold to sustain, release lifts the damper, drag to glissando.
  *  - The ♪ button at the foot of the rail makes scrolling play the lead note
  *    (off by default: browsers only allow sound after a tap).
- *  - Top key = C3 (MIDI 48) by default; pitch rises down the page.
+ *  - Bottom key = C3 (MIDI 48) by default; pitch falls down the page, like a
+ *    keyboard turned with its bass end to the floor.
  *
  * Styles: NextGenPianoRail.css (classes prefixed `ngp-`, themed by CSS variables).
  * Sound: pianoEngine.ts + pianoSamples.ts (21 acoustic-grand samples, C3–C8).
@@ -22,7 +23,8 @@ const WHITE_SEMIS = [0, 2, 4, 5, 7, 9, 11]; // C D E F G A B
 const BLACK_AFTER: Record<number, number> = { 0: 1, 1: 3, 3: 6, 4: 8, 5: 10 }; // C♯ D♯ F♯ G♯ A♯
 const NAMES = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
 
-type Key = { id: string; kind: "white" | "black"; index: number; midi: number; top: number; h: number };
+/** index counts up in pitch from the bottom key; row counts down the page from the top */
+type Key = { id: string; kind: "white" | "black"; index: number; row: number; midi: number; top: number; h: number };
 
 export interface NextGenPianoRailProps {
   /** Controlled open state. Omit to let the component manage it. */
@@ -36,7 +38,7 @@ export interface NextGenPianoRailProps {
   showSoundButton?: boolean;
   /** Remember open/closed in localStorage under this key. null disables. Default "ngp-open". */
   persistKey?: string | null;
-  /** MIDI note of the top key. Default 48 (C3). Samples cover 48–108. */
+  /** MIDI note of the bottom key. Default 48 (C3). Samples cover 48–108. */
   baseMidi?: number;
   /** White-key height in px: [desktop, under 700px]. Default [30, 24]. */
   keyHeight?: [number, number];
@@ -131,15 +133,18 @@ export function NextGenPianoRail({
 
   const keyH = narrow ? keyHeight[1] : keyHeight[0];
   const keys = useMemo<Key[]>(() => {
-    const n = Math.ceil(vh / keyH) + 1;
+    const n = Math.ceil(vh / keyH);
     const out: Key[] = [];
+    // built upwards from the bottom of the screen, so the lowest key always sits fully in view
     for (let i = 0; i < n; i++) {
       const pos = i % 7;
       const oct = Math.floor(i / 7);
-      out.push({ id: `w${i}`, kind: "white", index: i, midi: baseMidi + oct * 12 + WHITE_SEMIS[pos], top: i * keyH, h: keyH });
+      const top = vh - (i + 1) * keyH;
+      out.push({ id: `w${i}`, kind: "white", index: i, row: n - 1 - i, midi: baseMidi + oct * 12 + WHITE_SEMIS[pos], top, h: keyH });
       if (pos in BLACK_AFTER && i < n - 1) {
+        // a sharp sits on the line between its white key and the one above
         const bh = keyH * 0.62;
-        out.push({ id: `b${i}`, kind: "black", index: i, midi: baseMidi + oct * 12 + BLACK_AFTER[pos], top: (i + 1) * keyH - bh / 2, h: bh });
+        out.push({ id: `b${i}`, kind: "black", index: i, row: n - 1 - i, midi: baseMidi + oct * 12 + BLACK_AFTER[pos], top: top - bh / 2, h: bh });
       }
     }
     return out;
@@ -154,7 +159,9 @@ export function NextGenPianoRail({
       raf = 0;
       const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       const p = Math.min(1, Math.max(0, window.scrollY / max));
-      const i = Math.round(p * Math.max(1, whites.length - 5));
+      // the triad (lead, third and fifth above) starts at the top and walks down as the page scrolls;
+      // the topmost key is clipped by the screen edge, so the fifth stops one below it
+      const i = Math.round((1 - p) * Math.max(1, whites.length - 6));
       setLead(i);
       if (i !== lastLead.current) {
         if (sound && lastLead.current !== -1) {
@@ -209,7 +216,7 @@ export function NextGenPianoRail({
               className={["ngp-key", `is-${k.kind}`, isDown(k) && "is-down", scrollTriad && k.kind === "white" && k.index === lead && "is-lead"]
                 .filter(Boolean)
                 .join(" ")}
-              style={{ top: k.top, height: k.h, ["--i" as string]: k.index }}
+              style={{ top: k.top, height: k.h, ["--i" as string]: k.row }}
               onPointerDown={(e) => {
                 e.preventDefault();
                 pointerDown.current = true;
