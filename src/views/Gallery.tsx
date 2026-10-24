@@ -10,12 +10,16 @@ import { GALLERY, SITE, type GalleryItem } from "@/lib/content";
 const FILTERS = ["All", "Performances", "Rehearsals", "Behind the scenes", "Video"] as const;
 type Filter = (typeof FILTERS)[number];
 
+const inFilter = (g: GalleryItem, f: Filter) => (f === "All" ? true : f === "Video" ? !!g.video : g.cat === f);
+/** only the filters with something in them (no performance photos yet, for instance) */
+const SHOWN = FILTERS.filter((f) => GALLERY.some((g) => inFilter(g, f)));
+
 export function Gallery() {
   const [filter, setFilter] = useState<Filter>("All");
   const [open, setOpen] = useState<number | null>(null);
 
   const items = useMemo<GalleryItem[]>(
-    () => GALLERY.filter((g) => (filter === "All" ? true : filter === "Video" ? g.video : g.cat === filter)),
+    () => GALLERY.filter((g) => inFilter(g, filter)),
     [filter],
   );
 
@@ -29,11 +33,11 @@ export function Gallery() {
       />
       <section className="ng-wrap ng-gallery">
         <div className="ng-filters" role="tablist" aria-label="Filter gallery">
-          {FILTERS.map((f) => (
+          {SHOWN.map((f) => (
             <button key={f} role="tab" aria-selected={filter === f} className={filter === f ? "is-on" : ""} onClick={() => setFilter(f)}>
               {f}
               <span className="ng-filter-count">
-                {f === "All" ? GALLERY.length : f === "Video" ? GALLERY.filter((g) => g.video).length : GALLERY.filter((g) => g.cat === f).length}
+                {GALLERY.filter((g) => inFilter(g, f)).length}
               </span>
             </button>
           ))}

@@ -35,9 +35,68 @@ export const PHOTOS = {
 
 export type PhotoKey = keyof typeof PHOTOS;
 
+const site = (file: string, alt: string, width: number, height: number, focus?: string): Photo => ({ src: `/media/site/${file}.jpg`, alt, width, height, focus });
+
+/** The author's own photos from the go-live edits (Drive), placed by name. */
+export const SITE_PHOTOS = {
+  handsRaised: site("rehearsal-hands-raised", "Singers in a line at rehearsal, hands raised, singing together", 2000, 1333, "50% 45%"),
+  atThePiano: site("rehearsal-at-the-piano", "Bradley at the piano with a line of singers under the church's stained-glass windows", 2000, 1333, "50% 62%"),
+  bradleyAtPiano: site("bradley-at-the-piano", "Bradley at the piano, watching the singers", 1333, 2000, "40% 80%"),
+} satisfies Record<string, Photo>;
+
+const gal = (file: string, alt: string, landscape = false, focus?: string): Photo => ({
+  src: `/media/gallery/${file}.jpg`,
+  alt,
+  width: landscape ? 1600 : 1066,
+  height: landscape ? 1066 : 1600,
+  focus,
+});
+
+/** Gallery photos: a rehearsal-day shoot (Drive: "FOR GALLERY PAGE"), 1600px on the long edge. */
+export const GALLERY_PHOTOS = {
+  listeningInARow: gal("listening-in-a-row", "Singers seated in a row along the wood-panelled hall, listening", true),
+  bradleyConducting: gal("bradley-conducting", "Bradley at the piano, arm raised, conducting the singers", false, "50% 30%"),
+  duetAtTheMic: gal("duet-at-the-mic", "Two singers sharing a microphone in front of the blue wall"),
+  reachingHigh: gal("reaching-high", "A singer stretching both arms high during a warm-up", false, "50% 25%"),
+  theHall: gal("the-hall", "The rehearsal hall: arched windows, chandeliers and a wooden floor", true),
+  midPhrase: gal("mid-phrase", "A singer mid-phrase, hand on chest, under stained glass", false, "50% 30%"),
+  bradleyLaughing: gal("bradley-laughing", "Bradley laughing with the singers", false, "50% 30%"),
+  laughingBetweenPieces: gal("laughing-between-pieces", "A singer laughing between pieces, seated with the group", true),
+  armsOutInUnison: gal("arms-out-in-unison", "Two singers with arms out together, moving in unison"),
+  readingThePart: gal("reading-the-part", "A singer reading a part from the sheet mid-song", false, "50% 35%"),
+  bradleyWithTwoSingers: gal("bradley-with-two-singers", "Bradley coaching two singers in front of the blue wall", true),
+  shapingTheSound: gal("shaping-the-sound", "A singer shaping the sound with both hands", false, "50% 30%"),
+  waitingToSing: gal("waiting-to-sing", "A singer with red hair waiting for a turn to sing", false, "50% 30%"),
+  bradleyTeaching: gal("bradley-teaching", "Bradley explaining a point to the group", false, "50% 30%"),
+  rehearsalInTheRound: gal("rehearsal-in-the-round", "Singers spread across the hall under the chandeliers"),
+  findingTheNote: gal("finding-the-note", "A singer finding the note with a raised finger", false, "50% 30%"),
+  aBigSmile: gal("a-big-smile", "A singer smiling broadly between takes", false, "50% 30%"),
+  bradleyLeadingWarmUp: gal("bradley-leading-warm-up", "Bradley leading a warm-up, seen from behind, singers facing him"),
+  pointingUp: gal("pointing-up", "A singer pointing upwards with a smile, hitting the high note", false, "50% 30%"),
+  theAmp: gal("the-amp", "A red amplifier on the floor, singers rehearsing out of focus behind"),
+  handsUp: gal("hands-up", "A singer with both hands raised mid-song", false, "50% 30%"),
+  bradleySmiling: gal("bradley-smiling", "Bradley smiling at the piano", false, "50% 30%"),
+} satisfies Record<string, Photo>;
+
+/**
+ * Films: too big for the repo, so they live in the Blob store under films/
+ * (private; the purge only touches auditions/) and stream through
+ * /api/film/<name>, which forwards to a short-lived presigned address.
+ */
+export const FILM_PREFIX = "films/";
+export const FILMS = {
+  rehearsal: {
+    path: "films/nextgen-rehearsal.mp4",
+    width: 720,
+    height: 1280,
+    poster: { src: "/media/gallery/film-rehearsal-poster.jpg", alt: "Two singers singing together during a NextGen rehearsal", width: 720, height: 1280 },
+  },
+} satisfies Record<string, { path: string; width: number; height: number; poster: Photo }>;
+export type FilmName = keyof typeof FILMS;
+
 /** The founder page: Bradley's photos and logo, from bradleyvocalcoach.com/about. */
 export const FOUNDER_PHOTOS = {
-  portrait: { src: "/media/founder/bradley-portrait.jpg", alt: "Bradley Barton-Young, chin resting on his hand, in a cream jacket", width: 1600, height: 1067, focus: "28% 40%" },
+  portrait: { src: "/media/founder/bradley-portrait-jacket.jpg", alt: "Bradley Barton-Young in a cream jacket, hands at his collar, by a sunlit window", width: 1334, height: 2000, focus: "50% 30%" },
   onStage: { src: "/media/founder/bradley-on-stage.jpg", alt: "Bradley singing into a microphone on stage", width: 1530, height: 886, focus: "45% 35%" },
   logo: { src: "/media/founder/bvc-logo.png", alt: "Bradley Vocal Coach: Master your voice", width: 1200, height: 512 },
 } satisfies Record<string, Photo>;

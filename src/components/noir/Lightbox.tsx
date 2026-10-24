@@ -11,7 +11,7 @@ type Props = {
   onIndex: (i: number) => void;
 };
 
-/** Full-screen viewer with keyboard + swipe. In production the video items mount a Mux player. */
+/** Full-screen viewer with keyboard + swipe. Films play here, streamed from the Blob store via /api/film. */
 export function Lightbox({ items, index, onClose, onIndex }: Props) {
   const startX = useRef<number | null>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
@@ -58,8 +58,23 @@ export function Lightbox({ items, index, onClose, onIndex }: Props) {
         </svg>
       </button>
       <div className="ng-lightbox-stage" key={item.id}>
-        <MediaSlot kind={item.kind} seed={item.seed} ratio={item.ratio} photo={item.photo} video={item.video} brief={item.title} showBrief={false} />
-        {item.video && <p className="ng-lightbox-note">Video plays here: streamed via Mux with captions and a poster frame.</p>}
+        {item.film ? (
+          <figure className="ng-media" style={{ aspectRatio: item.ratio }}>
+            {/* scrubbing the video mustn't count as a swipe to the next item */}
+            <video
+              src={`/api/film/${item.film}`}
+              poster={item.photo?.src}
+              controls
+              autoPlay
+              playsInline
+              preload="metadata"
+              onPointerDown={(e) => e.stopPropagation()}
+              onPointerUp={(e) => e.stopPropagation()}
+            />
+          </figure>
+        ) : (
+          <MediaSlot kind={item.kind} seed={item.seed} ratio={item.ratio} photo={item.photo} video={item.video} brief={item.title} showBrief={false} />
+        )}
       </div>
       <div className="ng-lightbox-bar">
         <button onClick={() => go(-1)} aria-label="Previous">

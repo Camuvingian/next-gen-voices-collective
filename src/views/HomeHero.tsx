@@ -32,11 +32,11 @@ export function HomeHero() {
       <div className="ng-wrap ng-hero-inner">
         {logo === "classic" ? <ClassicHead /> : <BoltHead />}
         <p className="ng-hero-lede">
-          An elite ensemble for outstanding singers who are ready to be challenged, rehearsing every week at a standard most adult groups aim for.
+          An elite collective for outstanding singers who are ready to be challenged, rehearsing every week at a standard most adult groups aim for.
         </p>
         <div className="ng-btn-row ng-hero-ctas">
           <ButtonLink to="auditions" anchor="apply" size="lg">
-            Apply to audition
+            Apply Now
           </ButtonLink>
           <ButtonLink to="contact" variant="outline" size="lg">
             Book us to perform

@@ -161,7 +161,7 @@ export function Reveal({
   id,
 }: {
   children: ReactNode;
-  as?: "div" | "section" | "li" | "article" | "header";
+  as?: "div" | "section" | "li" | "article" | "header" | "figure";
   delay?: number;
   className?: string;
   id?: string;

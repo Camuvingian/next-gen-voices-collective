@@ -1,7 +1,7 @@
 import { MediaSlot } from "@/components/noir/MediaSlot";
 import { ButtonLink, Eyebrow, Reveal, RiseText } from "@/components/noir/primitives";
 import { GAINS, SESSION_FLOW, SITE } from "@/lib/content";
-import { PHOTOS } from "@/lib/media";
+import { SITE_PHOTOS } from "@/lib/media";
 import { NeonSign } from "@/components/neon/NeonSign";
 
 export function PageHeader({ eyebrow, title, italic, lede }: { eyebrow: string; title: string; italic?: string; lede?: string }) {
@@ -35,7 +35,7 @@ export function About() {
 
       <section className="ng-wrap ng-about-hero">
         <Reveal>
-          <MediaSlot kind="stage" seed={52} ratio="21 / 9" photo={PHOTOS.rehearsalSinging} sizes="100vw" brief="panoramic performance shot, audience in foreground" />
+          <MediaSlot kind="stage" seed={52} ratio="21 / 9" photo={SITE_PHOTOS.atThePiano} sizes="100vw" brief="panoramic rehearsal shot" />
         </Reveal>
       </section>
 
@@ -49,7 +49,7 @@ export function About() {
             Ambitious performers who thrive <NeonSign>alongside others.</NeonSign>
           </h2>
           <p className="ng-lead">
-            Members are selected for their vocal ability, and just as much for their commitment, discipline and desire to develop as part of a
+            Members are selected for their vocal ability and potential, and just as much for their commitment, discipline and desire to develop as part of a
             unified group. If you value high standards and want to challenge yourself with like-minded singers, this is your room.
           </p>
           <ul className="ng-criteria">
@@ -101,7 +101,7 @@ export function About() {
       {/* Performances */}
       <section className="ng-section ng-wrap ng-perf">
         <Reveal className="ng-perf-media">
-          <MediaSlot kind="beams" seed={61} ratio="4 / 5" photo={PHOTOS.directorProfile} brief="performance, stage lights, mid-song" />
+          <MediaSlot kind="beams" seed={61} ratio="4 / 5" photo={SITE_PHOTOS.bradleyAtPiano} sizes="(max-width: 860px) 100vw, 45vw" brief="Bradley at the piano" />
         </Reveal>
         <Reveal className="ng-perf-text" delay={100}>
           <Eyebrow>Performance</Eyebrow>
@@ -142,13 +142,15 @@ export function About() {
         </div>
       </section>
 
-      {/* Ensemble quote */}
+      {/* A member's review */}
       <section className="ng-section ng-wrap">
-        <Reveal className="ng-quote">
+        <Reveal as="figure" className="ng-quote ng-review">
           <blockquote className="ng-display">
-            A sound no single member could make alone, from a group where every member still sounds like themselves.
+            Bradley is an incredible vocal coach who creates such a fun, safe, and welcoming environment. I always feel comfortable pushing beyond
+            my comfort zone. Whenever I struggle to reach certain notes or want to improve my strength and control, he knows exactly how to guide
+            me. Thank you Bradley, for always helping me reach my full potential!
           </blockquote>
-          <p className="ng-muted">The NextGen principle</p>
+          <figcaption className="ng-muted">Monica, NextGen member</figcaption>
         </Reveal>
       </section>
 
@@ -181,7 +183,7 @@ export function About() {
           </dl>
           <div className="ng-facts-cta">
             <ButtonLink to="auditions" anchor="apply" size="lg">
-              Apply to audition
+              Apply Now
             </ButtonLink>
           </div>
         </Reveal>

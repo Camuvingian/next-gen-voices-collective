@@ -68,7 +68,7 @@ export const ELIGIBILITY = [
   "Parent or guardian consent for singers under 18",
 ];
 
-import { PHOTOS, type Photo } from "./media";
+import { FILMS, GALLERY_PHOTOS as G, type FilmName, type Photo } from "./media";
 
 export type GalleryItem = {
   id: string;
@@ -77,21 +77,47 @@ export type GalleryItem = {
   title: string;
   ratio: string;
   video?: boolean;
+  /** a film from the Blob store (FILMS), played in the lightbox; `photo` is its poster */
+  film?: FilmName;
   seed: number;
   photo?: Photo;
 };
 
-// Interim gallery: the Collective's public Instagram photos (titles describe the shot; ⚑ swap for the author's files).
+const shot = (id: string, cat: GalleryItem["cat"], title: string, photo: Photo): GalleryItem => ({
+  id,
+  kind: "rehearsal",
+  cat,
+  title,
+  ratio: `${photo.width} / ${photo.height}`,
+  seed: 1,
+  photo,
+});
+
+// The gallery: a rehearsal-day shoot and a film from the same sessions. Filters with nothing in them are hidden.
 export const GALLERY: GalleryItem[] = [
-  { id: "g1", kind: "stage", cat: "Behind the scenes", title: "The Collective", ratio: "1 / 1", seed: 3, photo: PHOTOS.collectiveSteps },
-  { id: "g2", kind: "rehearsal", cat: "Rehearsals", title: "Full ensemble, mid-song", ratio: "3 / 2", seed: 7, photo: PHOTOS.rehearsalSinging },
-  { id: "g3", kind: "portrait", cat: "Behind the scenes", title: "The director", ratio: "4 / 5", seed: 11, photo: PHOTOS.directorPortrait },
-  { id: "g4", kind: "rehearsal", cat: "Rehearsals", title: "Notes between pieces", ratio: "3 / 2", seed: 5, photo: PHOTOS.rehearsalCircle },
-  { id: "g5", kind: "portrait", cat: "Rehearsals", title: "Listening back", ratio: "1 / 1", seed: 19, photo: PHOTOS.directorListening },
-  { id: "g6", kind: "portrait", cat: "Rehearsals", title: "Watching the blend", ratio: "3 / 4", seed: 23, photo: PHOTOS.directorProfile },
-  // ⚑ placeholders until performance photos and video arrive
-  { id: "g7", kind: "stage", cat: "Performances", title: "Showcase, full Collective", ratio: "4 / 3", seed: 31, video: true },
-  { id: "g8", kind: "beams", cat: "Performances", title: "Stage lights", ratio: "3 / 4", seed: 41 },
+  shot("listening", "Rehearsals", "Listening in", G.listeningInARow),
+  { ...shot("film", "Rehearsals", "A Saturday session", FILMS.rehearsal.poster), video: true, film: "rehearsal" },
+  shot("conducting", "Rehearsals", "Bradley takes the lead", G.bradleyConducting),
+  shot("duet", "Rehearsals", "Sharing the mic", G.duetAtTheMic),
+  shot("reaching", "Rehearsals", "Warm-up", G.reachingHigh),
+  shot("hall", "Behind the scenes", "The hall", G.theHall),
+  shot("mid-phrase", "Rehearsals", "Mid-phrase", G.midPhrase),
+  shot("bradley-laughing", "Behind the scenes", "Good notes", G.bradleyLaughing),
+  shot("laughing", "Behind the scenes", "Between pieces", G.laughingBetweenPieces),
+  shot("unison", "Rehearsals", "In unison", G.armsOutInUnison),
+  shot("reading", "Rehearsals", "Learning the part", G.readingThePart),
+  shot("coaching", "Rehearsals", "One-to-one", G.bradleyWithTwoSingers),
+  shot("shaping", "Rehearsals", "Shaping the sound", G.shapingTheSound),
+  shot("waiting", "Behind the scenes", "Up next", G.waitingToSing),
+  shot("teaching", "Rehearsals", "The detail", G.bradleyTeaching),
+  shot("round", "Rehearsals", "Room to move", G.rehearsalInTheRound),
+  shot("finding", "Rehearsals", "Finding the note", G.findingTheNote),
+  shot("smile", "Behind the scenes", "All smiles", G.aBigSmile),
+  shot("warm-up", "Rehearsals", "Warming up together", G.bradleyLeadingWarmUp),
+  shot("pointing", "Rehearsals", "Top note", G.pointingUp),
+  shot("amp", "Behind the scenes", "Plugged in", G.theAmp),
+  shot("hands-up", "Rehearsals", "Hands up", G.handsUp),
+  shot("bradley-smiling", "Behind the scenes", "The director", G.bradleySmiling),
 ];
 
 /**
@@ -109,11 +135,11 @@ export const FOUNDER = {
   ],
   stats: [
     { label: "Range", value: "4+ octaves" },
-    { label: "Teaches at", value: "The BRIT School" },
+    { label: "Taught at", value: "The BRIT School" },
     { label: "On stage with", value: "Sam Smith" },
   ],
   teaching: [
-    "As a go-to professional singing practitioner at The BRIT School, Bradley helps train the next generation of vocalists, both on the main curriculum and as Singing Lead and Manager of the school's Saturday Programme, guiding young emerging artists.",
+    "As a go-to professional singing practitioner at The BRIT School, Bradley helped train the next generation of vocalists, both on the main curriculum and as Singing Lead and Manager of the school's Saturday Programme, guiding young emerging artists.",
     "He has also worked with signed artists at Platoon, the Apple-owned creative development company that backs independent musicians with funding, global exposure and mentorship. Among them is Olympia Vitalis, a rising artist gaining international attention for her distinctive voice.",
   ],
   singers:

@@ -13,8 +13,6 @@ import { Shimmer } from "@/components/noir-motion/Typography";
 /** Stamped at build time; the site redeploys far more often than yearly. */
 const BUILD_YEAR = new Date().getFullYear();
 
-const NAV = ROUTES.filter((r) => r !== "home");
-
 export function Nav() {
   const { route } = useRouter();
   const [scrolled, setScrolled] = useState(false);
@@ -41,7 +39,7 @@ export function Nav() {
             <Logo markSize={36} />
           </Link>
           <nav className="ng-nav-links" aria-label="Main">
-            {NAV.map((r) => (
+            {ROUTES.map((r) => (
               <Link key={r} to={r} className={route === r ? "is-active" : ""} aria-current={route === r ? "page" : undefined}>
                 {ROUTE_LABELS[r]}
               </Link>

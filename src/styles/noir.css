@@ -322,6 +322,11 @@
   .ng-nav-links a { padding-inline: 9px; letter-spacing: 0.07em; }
   .ng-nav-links a::after { left: 9px; right: 9px; }
 }
+@media (max-width: 1000px) {
+  .ng-nav-inner { gap: 10px; }
+  .ng-nav-links a { padding-inline: 6px; font-size: 11px; letter-spacing: 0.05em; }
+  .ng-nav-links a::after { left: 6px; right: 6px; }
+}
 @keyframes ng-glimmer {
   from { background-position: 100% 0; }
   to { background-position: 0 0; }
@@ -395,3 +400,13 @@
 
 /* a form that couldn't be sent: the reason, just above the buttons */
 .ng-send-error { margin-top: 24px; padding: 12px 16px; border: 1px solid color-mix(in srgb, var(--ng-danger) 50%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--ng-danger) 8%, transparent); }
+
+/* ── About: a member's review (longer than a pull quote, so set smaller) ── */
+.ng-review { margin: 0 auto; padding-top: 0.6em; max-width: 860px; }
+:root .ng-review blockquote { font-size: var(--step-2); line-height: 1.38; }
+:root .ng-review blockquote::before { content: "\201C"; display: block; font-family: var(--font-display); font-size: 2.4em; line-height: 0.6; margin-bottom: 0.15em; color: var(--hl); text-shadow: 0 0 18px rgba(var(--hl-rgb), 0.6); }
+.ng-review figcaption { max-width: none; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; }
+
+/* ── Gallery films: played in the lightbox, always the full frame ── */
+.ng-media > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
+.ng-lightbox-stage .ng-media:has(> video) { height: 70vh; width: auto; }

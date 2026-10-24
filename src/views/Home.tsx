@@ -8,7 +8,7 @@ import { InstagramGlyph } from "@/components/noir/Chrome";
 import { Arrow, ButtonLink, Eyebrow, Reveal } from "@/components/noir/primitives";
 import { GALLERY, PILLARS, SITE, STEPS } from "@/lib/content";
 import { Link } from "@/lib/router";
-import { PHOTOS } from "@/lib/media";
+import { PHOTOS, SITE_PHOTOS } from "@/lib/media";
 import { NeonSign } from "@/components/neon/NeonSign";
 import { HomeHero } from "./HomeHero";
 
@@ -26,12 +26,12 @@ export function Home() {
         <Reveal className="ng-statement-text">
           <Eyebrow>The Collective</Eyebrow>
           <p className="ng-display ng-statement-big">
-            Exceptional young singers, selected for their voice <NeonSign>and</NeonSign> their discipline, working together until the blend is effortless.
+            The next generation of singers, selected for their voice <NeonSign>and</NeonSign> their discipline, working together until the blend is effortless.
           </p>
           <div className="ng-statement-cols">
             <p>
-              NextGen brings ambitious performers aged 13 to 18 into intensive ensemble and choir-based rehearsal. The focus is musical excellence:
-              vocal blend, harmony and precision.
+              NextGen brings ambitious performers aged 13 to 18 into intensive ensemble and choir-based rehearsal. The focus is excellence: vocal
+              blend, harmony, and artistic development.
             </p>
             <p>
               Singers build advanced musicianship, healthy technique and real stage presence, and learn to serve a collective sound without losing
@@ -86,7 +86,7 @@ export function Home() {
       {/* ── Mosaic ──────────────────────────────── */}
       <section className="ng-section ng-wrap ng-mosaic">
         <Reveal className="ng-mosaic-a">
-          <MediaSlot kind="stage" seed={21} ratio="3 / 2" photo={PHOTOS.rehearsalCircle} caption="Saturday rehearsal" />
+          <MediaSlot kind="stage" seed={21} ratio="3 / 2" photo={SITE_PHOTOS.handsRaised} caption="Saturday rehearsal" />
         </Reveal>
         <Reveal className="ng-mosaic-b" delay={100}>
           <MediaSlot kind="beams" seed={8} ratio="3 / 4" photo={PHOTOS.directorPortrait} caption="The director" />
