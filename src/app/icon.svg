@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 33.5 366 366">
+  <!-- the NeonBolt bolt (components/brand/NeonBolt.tsx), lit in the default neon red -->
+  <defs>
+    <filter id="g" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter>
+    <path id="b" d="M126 70 L206 70 Q222 70 215.7 84.7 L184.3 158.3 Q178 173 194 173 L222 173 Q238 173 228.7 186 L106.2 357.1 Q102 363 104.1 356.1 L133.3 260.3 Q138 245 122 245 L88 245 Q72 245 75.4 229.4 L106.6 85.6 Q110 70 126 70 Z"/>
+  </defs>
+  <rect x="-28" y="33.5" width="366" height="366" rx="72" fill="#0b0b0b"/>
+  <use href="#b" fill="#ff2e3f" filter="url(#g)" opacity="0.85"/>
+  <use href="#b" fill="#ff2e3f" stroke="#ff9aa3" stroke-width="10" stroke-linejoin="round"/>
+</svg>
