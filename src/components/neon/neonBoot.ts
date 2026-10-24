@@ -19,7 +19,9 @@
 export function applyNeonSettings(settings?: { on?: boolean; colour?: string; font?: string; piano?: boolean; logo?: string } | null, pendingFont?: boolean) {
   const root = document.documentElement;
   let s = settings;
-  if (s === undefined) {
+  // the settings menu is hidden (SETTINGS_MENU in NeonProvider): ignore saved settings
+  const remember = false;
+  if (s === undefined && remember) {
     try {
       s = JSON.parse(localStorage.getItem("ng-neon") || "null");
     } catch {

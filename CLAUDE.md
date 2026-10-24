@@ -72,6 +72,7 @@ pnpm build
 - **Settings:** defaults live in `NEON_DEFAULTS` (`NeonProvider.tsx`): red, Deco lettering, Piano Scroll on, Velvet curtain.
   - `neonBoot.ts` duplicates those defaults on purpose, because it is serialised with `toString()` into an inline script and can't import anything.
   - Change both files together.
+  - The settings menu is hidden (`SETTINGS_MENU = false` in `NeonProvider.tsx`, mirrored by `remember` in `neonBoot.ts`). Every visitor gets the defaults and saved settings are ignored. To bring the menu back, set both to true.
 - **Theme colour:**
   - The highlight colour is `var(--hl)`, with its family `--hl-2`, `--hl-rgb` and `--ng-glow`.
   - Presets are set with `data-ng-hl` on `<html>`, using `ruby|white|blue|pink|violet`; red has no attribute.

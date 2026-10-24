@@ -79,6 +79,14 @@ export const NEON_DEFAULTS: NeonSettings = {
 
 const KEY = "ng-neon";
 
+/**
+ * The settings menu (the cog, top right). Hidden for launch: every visitor gets
+ * NEON_DEFAULTS, and nothing is read from or saved to storage, so anyone who
+ * changed a setting earlier is back on the defaults. neonBoot.ts mirrors this
+ * (it can't import it); change both together.
+ */
+export const SETTINGS_MENU = false;
+
 type NeonCtx = NeonSettings & {
   set: <K extends keyof NeonSettings>(key: K, value: NeonSettings[K]) => void;
   reset: () => void;
@@ -88,6 +96,7 @@ const Ctx = createContext<NeonCtx>({ ...NEON_DEFAULTS, set: () => {}, reset: () 
 
 /* ── storage ──────────────────────────────────────────── */
 function load(): Partial<NeonSettings> | null {
+  if (!SETTINGS_MENU) return null;
   try {
     const raw = localStorage.getItem(KEY);
     return raw ? (JSON.parse(raw) as Partial<NeonSettings>) : null;
@@ -96,6 +105,7 @@ function load(): Partial<NeonSettings> | null {
   }
 }
 function save(s: NeonSettings) {
+  if (!SETTINGS_MENU) return;
   try {
     localStorage.setItem(KEY, JSON.stringify(s));
   } catch {

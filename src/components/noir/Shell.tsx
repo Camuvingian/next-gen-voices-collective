@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { NeonProvider } from "@/components/neon/NeonProvider";
+import { NeonProvider, SETTINGS_MENU } from "@/components/neon/NeonProvider";
 import { NeonMenu } from "@/components/neon/NeonMenu";
 import { PianoScroll } from "@/components/piano-rail/PianoScroll";
 import { RouterProvider, useRouter } from "@/lib/router";
@@ -17,7 +17,7 @@ function Frame({ children }: { children: ReactNode }) {
         Skip to content
       </a>
       <Nav />
-      <NeonMenu />
+      {SETTINGS_MENU && <NeonMenu />}
       <PianoScroll />
       <main id="main" tabIndex={-1} className={`ng-page ng-page--${route}`} key={route}>
         {children}
