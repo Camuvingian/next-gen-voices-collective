@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import type { GalleryItem } from "@/lib/content";
 import { MediaSlot } from "./MediaSlot";
 
@@ -37,7 +38,8 @@ export function Lightbox({ items, index, onClose, onIndex }: Props) {
   const item = items[index!];
   const go = (d: number) => onIndex((index! + d + items.length) % items.length);
 
-  return (
+  // rendered on <body>: inside the page, the page's fade-in keeps it under the nav, piano rail and scroll button
+  return createPortal(
     <div
       className="ng-lightbox"
       role="dialog"
@@ -90,6 +92,7 @@ export function Lightbox({ items, index, onClose, onIndex }: Props) {
           →
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

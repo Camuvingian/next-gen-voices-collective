@@ -63,6 +63,7 @@ const TUBE_TRACKING = 9;
 // Web fonts: drawn at font-size 100, so 100 units = 1em of the surrounding text.
 const FONT_TOP = -100;
 const FONT_BOTTOM = 36;
+// room for the glow at each end; a matching negative margin keeps the letters on the text edge
 const SIDE_PAD = 8;
 
 function tubeWord(word: string) {
@@ -166,6 +167,7 @@ function TubeWord({ word, material, id }: { word: string; material: Material; id
   const style: CSSProperties = {
     width: `${vbW / TUBE_UNITS_PER_EM}em`,
     height: `${vbH / TUBE_UNITS_PER_EM}em`,
+    marginInline: `${-SIDE_PAD / TUBE_UNITS_PER_EM}em`,
     verticalAlign: `${-(TUBE_BOTTOM - 100) / TUBE_UNITS_PER_EM}em`,
   };
   return (
@@ -202,7 +204,7 @@ function FontWord({ word, family, solid, material, id }: { word: string; family:
 
   const vbW = width + SIDE_PAD * 2;
   const vbH = FONT_BOTTOM - FONT_TOP;
-  const style: CSSProperties = { width: `${vbW / 100}em`, height: `${vbH / 100}em`, verticalAlign: `${-FONT_BOTTOM / 100}em` };
+  const style: CSSProperties = { width: `${vbW / 100}em`, height: `${vbH / 100}em`, marginInline: `${-SIDE_PAD / 100}em`, verticalAlign: `${-FONT_BOTTOM / 100}em` };
   return (
     <svg className="ngn-word" viewBox={`${-SIDE_PAD} ${FONT_TOP} ${vbW} ${vbH}`} style={style} aria-hidden="true" focusable="false">
       <NeonMaterial

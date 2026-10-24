@@ -124,7 +124,7 @@ export function MediaSlot({
       {video && (
         <span className="ng-media-play" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="22" height="22">
-            <path d="M9 5.5v13l10-6.5z" fill="currentColor" />
+            <path d="M7 5.5v13l10-6.5z" fill="currentColor" />
           </svg>
         </span>
       )}
