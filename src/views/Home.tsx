@@ -12,7 +12,8 @@ import { PHOTOS, SITE_PHOTOS } from "@/lib/media";
 import { NeonSign } from "@/components/neon/NeonSign";
 import { HomeHero } from "./HomeHero";
 
-const SHOWREEL = [{ id: "reel", kind: "stage" as const, cat: "Performances" as const, title: "NextGen showreel", ratio: "16 / 9", seed: 13, video: true, photo: PHOTOS.rehearsalSinging }];
+// no showreel has been cut yet: "See the standard" plays the rehearsal film from the gallery
+const SHOWREEL = GALLERY.filter((g) => g.film);
 
 export function Home() {
   const [reel, setReel] = useState<number | null>(null);

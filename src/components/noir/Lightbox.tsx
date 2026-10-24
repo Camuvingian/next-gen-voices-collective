@@ -37,6 +37,7 @@ export function Lightbox({ items, index, onClose, onIndex }: Props) {
   if (!open) return null;
   const item = items[index!];
   const go = (d: number) => onIndex((index! + d + items.length) % items.length);
+  const many = items.length > 1;
 
   // rendered on <body>: inside the page, the page's fade-in keeps it under the nav, piano rail and scroll button
   return createPortal(
@@ -79,18 +80,23 @@ export function Lightbox({ items, index, onClose, onIndex }: Props) {
         )}
       </div>
       <div className="ng-lightbox-bar">
-        <button onClick={() => go(-1)} aria-label="Previous">
-          ←
-        </button>
+        {many && (
+          <button onClick={() => go(-1)} aria-label="Previous">
+            ←
+          </button>
+        )}
         <div>
           <strong>{item.title}</strong>
           <span>
-            {item.cat} · {index! + 1} / {items.length}
+            {item.cat}
+            {many && ` · ${index! + 1} / ${items.length}`}
           </span>
         </div>
-        <button onClick={() => go(1)} aria-label="Next">
-          →
-        </button>
+        {many && (
+          <button onClick={() => go(1)} aria-label="Next">
+            →
+          </button>
+        )}
       </div>
     </div>,
     document.body,
