@@ -38,7 +38,7 @@ pnpm build
 - `.env.example` is committed and lists every variable:
   - `RESEND_API_KEY`
   - `EMAIL_FROM`, which is `applications@nextgenvoices.live`
-  - `AUDITIONS_TO` and `CONTACT_TO`, which default to `bradley@bradleyvocalcoach.com`
+  - `AUDITIONS_TO`, `CONTACT_TO` and `REPLY_TO` (where replies to our emails go), which default to `bradley@bradleyvocalcoach.com`
   - `SITE_URL`
   - `BLOB_STORE_ID`
   - `CRON_SECRET`

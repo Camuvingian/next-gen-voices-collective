@@ -1,7 +1,7 @@
 import { head } from "@vercel/blob";
 import { application, HONEYPOT } from "@/lib/forms";
 import { receipt, team, type Video } from "@/lib/server/auditionEmails";
-import { auditionsTo, EmailNotConfigured, sendEmail, siteUrl } from "@/lib/server/email";
+import { auditionsTo, EmailNotConfigured, replyTo, sendEmail, siteUrl } from "@/lib/server/email";
 import { limited } from "@/lib/server/rateLimit";
 import { videoLink } from "@/lib/server/videoLink";
 
@@ -51,14 +51,14 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error("[apply] team email failed", err);
     const msg = err instanceof EmailNotConfigured ? "Applications aren't switched on yet." : "We couldn't send your application just now.";
-    return Response.json({ error: `${msg} Please try again later, or email ${auditionsTo()}.` }, { status: 503 });
+    return Response.json({ error: `${msg} Please try again later, or email ${replyTo()}.` }, { status: 503 });
   }
 
   // 2. the receipt, to the parent/guardian and the singer; a courtesy, so the
   //    application still counts if it fails
   const to = [a.gEmail, a.singerEmail].filter((e, i, all) => e && all.findIndex((x) => x.toLowerCase() === e.toLowerCase()) === i);
   try {
-    await sendEmail({ to, replyTo: auditionsTo(), ...receipt(a, video, site, at) });
+    await sendEmail({ to, replyTo: replyTo(), ...receipt(a, video, site, at) });
   } catch (err) {
     console.error("[apply] receipt email failed", err);
   }

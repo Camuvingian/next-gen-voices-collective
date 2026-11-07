@@ -1,5 +1,5 @@
 import { contactSchemaFor, HONEYPOT } from "@/lib/forms";
-import { contactTo, EmailNotConfigured, layout, sendEmail } from "@/lib/server/email";
+import { contactTo, EmailNotConfigured, layout, replyTo, sendEmail } from "@/lib/server/email";
 import { limited } from "@/lib/server/rateLimit";
 
 const KINDS: Record<string, string> = { general: "General enquiry", booking: "Booking enquiry", auditions: "Audition question", press: "Press enquiry" };
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error("[contact] email failed", err);
     const msg = err instanceof EmailNotConfigured ? "Messages aren't switched on yet." : "We couldn't send your message just now.";
-    return Response.json({ error: `${msg} Please try again later, or email ${contactTo()}.` }, { status: 503 });
+    return Response.json({ error: `${msg} Please try again later, or email ${replyTo()}.` }, { status: 503 });
   }
   return Response.json({ ok: true });
 }

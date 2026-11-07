@@ -8,12 +8,15 @@
  *                   e.g. "NextGen Voice Collective <applications@nextgenvoices.live>"
  *   AUDITIONS_TO    where applications go   (default bradley@bradleyvocalcoach.com)
  *   CONTACT_TO      where enquiries go      (default the same)
+ *   REPLY_TO        where people's replies to our emails go (default the same)
  *   SITE_URL        the public address used for links and images in emails,
  *                   e.g. https://www.nextgenvoices.live (default: the address the form was sent from)
  */
 export const DEFAULT_TO = "bradley@bradleyvocalcoach.com";
 export const auditionsTo = () => process.env.AUDITIONS_TO || DEFAULT_TO;
 export const contactTo = () => process.env.CONTACT_TO || DEFAULT_TO;
+/** the public address: replies to anything we send land here, never at the no-reply sender */
+export const replyTo = () => process.env.REPLY_TO || DEFAULT_TO;
 
 type Email = { to: string | string[]; subject: string; html: string; text: string; replyTo?: string; attachments?: Attachment[] };
 
@@ -25,7 +28,7 @@ export const siteUrl = (req: Request) => (process.env.SITE_URL || new URL(req.ur
 
 export class EmailNotConfigured extends Error {}
 
-export async function sendEmail({ to, subject, html, text, replyTo, attachments }: Email) {
+export async function sendEmail({ to, subject, html, text, replyTo: reply = replyTo(), attachments }: Email) {
   const key = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
   if (!key || !from) throw new EmailNotConfigured("RESEND_API_KEY and EMAIL_FROM must be set to send email");
@@ -38,7 +41,7 @@ export async function sendEmail({ to, subject, html, text, replyTo, attachments 
       subject,
       html,
       text,
-      ...(replyTo ? { reply_to: replyTo } : {}),
+      reply_to: reply,
       // Resend takes attachment content as base64
       ...(attachments?.length
         ? {
